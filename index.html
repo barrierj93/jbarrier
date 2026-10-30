@@ -295,16 +295,22 @@
       .loader-name { font-size:13px; }
       .loader-note { font-size:8px; }
       .topbar { min-height:65px; gap:14px; }
-      .name { font-size:13px; }
+      /* Móvil: sin nombre arriba; logos a la izquierda, idioma y tema a la derecha */
+      .topbar > .name { display:none; }
+      .topbar-right { flex:1; }
+      .top-links { margin-left:-9px; margin-right:auto; }
+      .top-sep { display:none; }
       .topbar-note { font-size:8px; letter-spacing:.5px; }
       .lang { font-size:10px; }
       .topbar-right { gap:8px; }
       .intro { grid-template-columns:1fr; gap:25px; padding:34px 0 30px; }
       h1 { font-size:calc((100vw - 36px) / 6.95); }
       .eyebrow { font-size:10px; margin-bottom:17px; }
-      .intro-copy { display:flex; align-items:end; justify-content:space-between; gap:22px; }
-      .intro-copy p { max-width:255px; font-size:14px; line-height:1.5; }
-      .intro-copy .byline { display:none; }
+      /* Móvil: titular y textos a todo el ancho (el JS ajusta el tamaño de cada línea al ancho de la página) */
+      .intro-copy { display:block; }
+      .intro-copy p { max-width:none; font-size:14px; line-height:1.35; white-space:nowrap; }
+      .intro-copy .byline { margin-top:12px; line-height:1.35; }
+      .intro-copy .byline br { display:none; }
       .section-label { font-size:10px; margin-bottom:20px; }
       .project-grid { grid-template-columns:1fr; row-gap:33px; }
       .project:nth-child(even) { --cd:0s; }
@@ -399,7 +405,7 @@
             </div>
             <div class="intro-copy">
               <p data-i18n="intro">Different questions, explored through data.</p>
-              <p class="byline" data-i18n="byline">A collection of<br>independent projects.</p>
+              <p class="byline" data-i18n="byline">A collection of <br>independent projects.</p>
             </div>
           </section>
           <div class="section-label"><h2 id="projects-heading" data-i18n="label">The project index</h2><span id="label-count">01 — 04</span></div>
@@ -578,7 +584,7 @@
         view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', note: 'Independent data projects', langAria: 'Language',
         eyebrow: 'Research. Analysis. Visual stories.', h1a: 'ILLUSTRATING', h1b: 'DATA', h1aria: 'Illustrating data.',
         intro: 'Different questions, explored through data.',
-        byline: 'A collection of<br>independent projects.', label: 'The project index',
+        byline: 'A collection of <br>independent projects.', label: 'The project index',
         explore: 'Explore', cueAria: 'Scroll to the project index', hfRight: 'Index 01 — 04 ↓',
         type: 'Data Analysis &amp; Visualization',
         'p1.title': 'Overdue Sessions', 'p1.type': 'Exploratory Data Analysis | Data Visualization', 'p1.aria': 'Overdue Sessions — open project in a new tab',
@@ -602,7 +608,7 @@
         view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', note: 'Proyectos de datos independientes', langAria: 'Idioma',
         eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'ILUSTRANDO', h1b: 'DATOS', h1aria: 'Ilustrando datos.',
         intro: 'Preguntas distintas, exploradas con datos.',
-        byline: 'Una colección de<br>proyectos independientes.', label: 'Índice de proyectos',
+        byline: 'Una colección de <br>proyectos independientes.', label: 'Índice de proyectos',
         explore: 'Explorar', cueAria: 'Ir al índice de proyectos', hfRight: 'Índice 01 — 04 ↓',
         type: 'Análisis y visualización de datos',
         'p1.title': 'Sesiones Pendientes', 'p1.type': 'Análisis exploratorio de datos | Visualización de datos', 'p1.aria': 'Sesiones Pendientes — abrir el proyecto en una pestaña nueva',
@@ -705,12 +711,36 @@
       const H = sticky.clientHeight, base = fs;
       // Escritorio/tablet: el titular llega como máximo hasta la mitad horizontal de la pantalla (con el zoom inicial incluido)
       if (innerWidth > 680) fs = Math.min(fs, fs * ((innerWidth / 2 - a.l) / 1.06) / (a.r - a.l));
+      // Móvil: el titular ocupa todo el ancho de la página
+      else { const box = title.parentElement.getBoundingClientRect(); fs = fs * (box.right - a.l) / (a.r - a.l); }
       // Altura: si no cabe, se reduce para que la escena de scroll siga funcionando
       const maxT = Math.min(H - 330, H * 0.5);
       if (fs * 0.84 * (1 + r) + 10 > maxT && maxT > 120) fs = (maxT - 10) / (0.84 * (1 + r));
       if (fs !== base) title.style.fontSize = fs.toFixed(2) + 'px';
+      // Móvil: segunda pasada de corrección (el tamaño no escala del todo lineal) para clavar el borde derecho
+      if (innerWidth <= 680) {
+        const box = title.parentElement.getBoundingClientRect(), a1 = lineInk(l1);
+        fs = fs * (box.right - a1.l) / (a1.r - a1.l);
+        if (fs * 0.84 * (1 + r) + 10 > maxT && maxT > 120) fs = (maxT - 10) / (0.84 * (1 + r));
+        title.style.fontSize = fs.toFixed(2) + 'px';
+      }
       const a2 = lineInk(l1), b2 = lineInk(l2);
       l2.style.marginLeft = (a2.l - b2.l).toFixed(2) + 'px';
+      fitCopy();
+    }
+    // Móvil: cada texto de la portada en una línea que ocupa exactamente el ancho de la página
+    function fitCopy() {
+      const ps = $$('.intro-copy > p');
+      ps.forEach(p => { p.style.fontSize = ''; });
+      if (innerWidth > 680) return;
+      const W = $('.intro-copy').getBoundingClientRect().width;
+      const textW = p => { const r = document.createRange(); r.selectNodeContents(p); return r.getBoundingClientRect().width; };
+      ps.forEach(p => {
+        for (let k = 0; k < 3; k++) {
+          const w = textW(p), fs = parseFloat(getComputedStyle(p).fontSize);
+          if (w > 0) p.style.fontSize = (fs * W / w * 0.997).toFixed(2) + 'px';
+        }
+      });
     }
     function measure() {
       body.classList.remove('no-pin');
