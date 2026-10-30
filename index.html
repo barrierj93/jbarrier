@@ -9,7 +9,12 @@
   <!-- FUENTES PROPIAS (./fonts): se precargan las dos que se ven primero -->
   <link rel="preload" href="./fonts/sans-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./fonts/mono-700.woff2" as="font" type="font/woff2" crossorigin>
-  <title>Julián Barrera — Selected work</title>
+  <title>Julián Barrera — Data Science</title>
+  <!-- Vista previa al compartir el enlace (WhatsApp, Slack, LinkedIn…) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Julián Barrera — Data Science">
+  <meta property="og:description" content="Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.">
+  <meta name="twitter:card" content="summary">
   <script>
     /* Arranque: marca JS activo y decide si se muestra el preloader (solo 1ª visita de la sesión). */
     (function (d) {
@@ -329,7 +334,7 @@
 
   <!-- PRELOADER -->
   <div class="loader" aria-hidden="true">
-    <div class="loader-top"><span class="loader-name">JULIÁN BARRERA.</span><span class="loader-note" data-i18n="ldNote">Selected work</span></div>
+    <div class="loader-top"><span class="loader-name">JULIÁN BARRERA.</span><span class="loader-note" data-i18n="ldNote">Data Science</span></div>
     <div class="loader-foot"><div class="loader-num"><span id="ld-num">000</span><em>%</em></div><span data-i18n="ldFoot">Loading<br>independent data projects</span></div>
   </div>
 
@@ -393,8 +398,8 @@
               <h1 id="page-title" class="title" aria-label="Illustrating data."><span class="line">ILLUSTRATING</span><span class="line second-line">DATA<span class="sq">.</span></span></h1>
             </div>
             <div class="intro-copy">
-              <p data-i18n="intro"><a class="topic" href="#p1">Mental health.</a> <a class="topic" href="#p2">Cyberattacks.</a> <a class="topic" href="#p3">Football.</a> <a class="topic" href="#p4">Climate.</a><br>Different questions, explored through data.</p>
-              <p class="byline" data-i18n="byline">A collection of independent<br>projects by Julián Barrera.</p>
+              <p data-i18n="intro">Different questions, explored through data.</p>
+              <p class="byline" data-i18n="byline">A collection of<br>independent projects.</p>
             </div>
           </section>
           <div class="section-label"><h2 id="projects-heading" data-i18n="label">The project index</h2><span id="label-count">01 — 04</span></div>
@@ -565,15 +570,15 @@
     /* ---------- IDIOMA (ES / EN): se elige según el navegador; se puede cambiar con los botones ES / EN ---------- */
     const I18N = {
       en: {
-        pageTitle: 'Julián Barrera — Illustrating data',
+        pageTitle: 'Julián Barrera — Data Science',
         metaDesc: 'Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.',
-        skip: 'Skip to projects', ldNote: 'Selected work', ldFoot: 'Loading<br>independent data projects',
+        skip: 'Skip to projects', ldNote: 'Data Science', ldFoot: 'Loading<br>independent data projects',
         navAria: 'Quick navigation', home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
         liAria: 'LinkedIn — opens in a new tab', email: 'Email', emailAria: 'Send an email', index: 'Index',
         view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', note: 'Independent data projects', langAria: 'Language',
         eyebrow: 'Research. Analysis. Visual stories.', h1a: 'ILLUSTRATING', h1b: 'DATA', h1aria: 'Illustrating data.',
-        intro: '<a class="topic" href="#p1">Mental health.</a> <a class="topic" href="#p2">Cyberattacks.</a> <a class="topic" href="#p3">Football.</a> <a class="topic" href="#p4">Climate.</a><br>Different questions, explored through data.',
-        byline: 'A collection of independent<br>projects by Julián Barrera.', label: 'The project index',
+        intro: 'Different questions, explored through data.',
+        byline: 'A collection of<br>independent projects.', label: 'The project index',
         explore: 'Explore', cueAria: 'Scroll to the project index', hfRight: 'Index 01 — 04 ↓',
         type: 'Data Analysis &amp; Visualization',
         'p1.title': 'Overdue Sessions', 'p1.type': 'Exploratory Data Analysis | Data Visualization', 'p1.aria': 'Overdue Sessions — open project in a new tab',
@@ -589,15 +594,15 @@
         foot: 'Julián Barrera.', top: 'Back to top ↑'
       },
       es: {
-        pageTitle: 'Julián Barrera — Ilustrando datos',
+        pageTitle: 'Julián Barrera — Data Science',
         metaDesc: 'Proyectos independientes de Julián Barrera. Análisis de datos, visualización interactiva e historias sobre el mundo en el que vivimos.',
-        skip: 'Saltar a los proyectos', ldNote: 'Trabajo seleccionado', ldFoot: 'Cargando<br>proyectos de datos independientes',
+        skip: 'Saltar a los proyectos', ldNote: 'Data Science', ldFoot: 'Cargando<br>proyectos de datos independientes',
         navAria: 'Navegación rápida', home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
         liAria: 'LinkedIn — se abre en una pestaña nueva', email: 'Correo', emailAria: 'Enviar un correo', index: 'Índice',
         view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', note: 'Proyectos de datos independientes', langAria: 'Idioma',
         eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'ILUSTRANDO', h1b: 'DATOS', h1aria: 'Ilustrando datos.',
-        intro: '<a class="topic" href="#p1">Salud mental.</a> <a class="topic" href="#p2">Ciberataques.</a> <a class="topic" href="#p3">Fútbol.</a> <a class="topic" href="#p4">Clima.</a><br>Preguntas distintas, exploradas con datos.',
-        byline: 'Una colección de proyectos<br>independientes de Julián Barrera.', label: 'Índice de proyectos',
+        intro: 'Preguntas distintas, exploradas con datos.',
+        byline: 'Una colección de<br>proyectos independientes.', label: 'Índice de proyectos',
         explore: 'Explorar', cueAria: 'Ir al índice de proyectos', hfRight: 'Índice 01 — 04 ↓',
         type: 'Análisis y visualización de datos',
         'p1.title': 'Sesiones Pendientes', 'p1.type': 'Análisis exploratorio de datos | Visualización de datos', 'p1.aria': 'Sesiones Pendientes — abrir el proyecto en una pestaña nueva',
