@@ -6,6 +6,9 @@
   <meta name="description" content="Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.">
   <meta name="theme-color" content="#f6f4ee">
   <meta name="color-scheme" content="light dark">
+  <!-- FUENTES PROPIAS (./fonts): se precargan las dos que se ven primero -->
+  <link rel="preload" href="./fonts/sans-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/mono-700.woff2" as="font" type="font/woff2" crossorigin>
   <title>Julián Barrera — Selected work</title>
   <script>
     /* Arranque: marca JS activo y decide si se muestra el preloader (solo 1ª visita de la sesión). */
@@ -25,12 +28,20 @@
   </script>
   <style>
     /* =========================================================
-       DISEÑO: colores, tipografía y tamaños. Sin dependencias.
+       DISEÑO: colores, tipografía y tamaños. Sin dependencias externas.
        ========================================================= */
+    /* Fuentes alojadas en la propia web (carpeta ./fonts). Ambas con licencia SIL OFL 1.1 — ver ./fonts/LICENSES.txt
+       · JB Sans = Liberation Sans (mismas medidas y aspecto que Arial)
+       · JB Mono = Courier Prime (máquina de escribir, mismas medidas que Courier New) */
+    @font-face { font-family:"JB Sans"; src:url("./fonts/sans-400.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family:"JB Sans"; src:url("./fonts/sans-700.woff2") format("woff2"); font-weight:700 900; font-style:normal; font-display:swap; }
+    @font-face { font-family:"JB Mono"; src:url("./fonts/mono-400.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family:"JB Mono"; src:url("./fonts/mono-700.woff2") format("woff2"); font-weight:700 900; font-style:normal; font-display:swap; }
     :root {
       --paper:#f6f4ee; --ink:#181818; --muted:#52524c; --acid:#dfff6c; --line:#c9c8be; --olive:#6b7060;
       --ease:cubic-bezier(.19,1,.22,1); --ease-io:cubic-bezier(.77,0,.18,1);
-      --mono:"Courier New",monospace;
+      --sans:"JB Sans",Arial,Helvetica,sans-serif;
+      --mono:"JB Mono","Courier New",monospace;
       --hl:#ffe93b; --pop:#ffe93b; --hl-ink:#181818; --bar:rgba(246,244,238,.9); color-scheme:light;
     }
     /* TEMA OSCURO */
@@ -47,7 +58,7 @@
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; scroll-padding-top:80px; }
     html.loading { overflow:hidden; }
-    body { margin:0; color:var(--ink); background:var(--paper); font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
     a { color:inherit; }
     a:focus-visible, button:focus-visible { outline:3px solid #3159f6; outline-offset:7px; }
     ::selection { color:#181818; background:var(--acid); }
@@ -910,6 +921,7 @@
       }, 140);
     });
     window.addEventListener('load', measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { st.lw = innerWidth; st.lh = innerHeight; measure(); });
 
     /* ---------- Arranque ---------- */
     measure();
