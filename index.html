@@ -144,7 +144,7 @@
     /* Se desvanece con el scroll a la vez que aparecen el eyebrow y la etiqueta del índice (--ic lo controla el JS) */
     .intro-copy > p { opacity:var(--ic,1); transform:translateY(calc((1 - var(--ic,1)) * -14px)); visibility:var(--icv,visible); }
     .intro-copy p { margin:0; max-width:270px; font-size:17px; line-height:1.55; letter-spacing:-.3px; }
-    .intro-copy .byline { margin-top:20px; font-family:var(--mono); font-size:11px; line-height:1.6; letter-spacing:.3px; }
+    .intro-copy .byline { margin-top:0; font-family:var(--mono); font-size:11px; line-height:1.6; letter-spacing:.3px; }
     /* Subrayador amarillo: mismo efecto en temas de portada, nota del topbar y títulos de proyecto */
     .topic, .topbar-note .sc, h3 .ul { text-decoration:none; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .5s var(--ease); }
     .topic:hover, .topic:focus-visible, .topbar-note:hover .sc, .project-link:focus-visible h3 .ul { background-size:100% .55em; }
@@ -309,7 +309,7 @@
       /* Móvil: titular y textos a todo el ancho (el JS ajusta el tamaño de cada línea al ancho de la página) */
       .intro-copy { display:block; }
       .intro-copy p { max-width:none; font-size:14px; line-height:1.35; white-space:nowrap; }
-      .intro-copy .byline { margin-top:12px; line-height:1.35; }
+      .intro-copy .byline { margin-top:0; line-height:1.35; }
       .intro-copy .byline br { display:none; }
       .section-label { font-size:10px; margin-bottom:20px; }
       .project-grid { grid-template-columns:1fr; row-gap:33px; }
@@ -401,10 +401,9 @@
           <section class="intro" aria-labelledby="page-title">
             <div>
               <p class="eyebrow" data-i18n="eyebrow">Research. Analysis. Visual stories.</p>
-              <h1 id="page-title" class="title" aria-label="Illustrating data."><span class="line">ILLUSTRATING</span><span class="line second-line">DATA<span class="sq">.</span></span></h1>
+              <h1 id="page-title" class="title" aria-label="Exploring data."><span class="line">EXPLORING</span><span class="line second-line">DATA<span class="sq">.</span></span></h1>
             </div>
             <div class="intro-copy">
-              <p data-i18n="intro">Different questions, explored through data.</p>
               <p class="byline" data-i18n="byline">A collection of <br>independent projects.</p>
             </div>
           </section>
@@ -582,8 +581,7 @@
         navAria: 'Quick navigation', home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
         liAria: 'LinkedIn — opens in a new tab', email: 'Email', emailAria: 'Send an email', index: 'Index',
         view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', note: 'Independent data projects', langAria: 'Language',
-        eyebrow: 'Research. Analysis. Visual stories.', h1a: 'ILLUSTRATING', h1b: 'DATA', h1aria: 'Illustrating data.',
-        intro: 'Different questions, explored through data.',
+        eyebrow: 'Research. Analysis. Visual stories.', h1a: 'EXPLORING', h1b: 'DATA', h1aria: 'Exploring data.',
         byline: 'A collection of <br>independent projects.', label: 'The project index',
         explore: 'Explore', cueAria: 'Scroll to the project index', hfRight: 'Index 01 — 04 ↓',
         type: 'Data Analysis &amp; Visualization',
@@ -606,8 +604,7 @@
         navAria: 'Navegación rápida', home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
         liAria: 'LinkedIn — se abre en una pestaña nueva', email: 'Correo', emailAria: 'Enviar un correo', index: 'Índice',
         view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', note: 'Proyectos de datos independientes', langAria: 'Idioma',
-        eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'ILUSTRANDO', h1b: 'DATOS', h1aria: 'Ilustrando datos.',
-        intro: 'Preguntas distintas, exploradas con datos.',
+        eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'EXPLORANDO', h1b: 'DATOS', h1aria: 'Explorando datos.',
         byline: 'Una colección de <br>proyectos independientes.', label: 'Índice de proyectos',
         explore: 'Explorar', cueAria: 'Ir al índice de proyectos', hfRight: 'Índice 01 — 04 ↓',
         type: 'Análisis y visualización de datos',
@@ -686,7 +683,7 @@
       projects.style.marginTop = ''; projects.style.transform = '';
       st.threshold = label.getBoundingClientRect().bottom + scrollY;
     }
-    // "DATA." se escala para ocupar exactamente el mismo ancho de tinta que "ILLUSTRATING" (bordes izq. y dcho. alineados).
+    // "DATA." se escala para ocupar exactamente el mismo ancho de tinta que "EXPLORING" (bordes izq. y dcho. alineados).
     // Si el bloque resultante es demasiado alto para la pantalla, se reduce todo el titular proporcionalmente.
     const inkCtx = document.createElement('canvas').getContext('2d');
     function ink(chEl) {
