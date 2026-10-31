@@ -6,24 +6,20 @@
   <meta name="description" content="Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.">
   <meta name="theme-color" content="#f6f4ee">
   <meta name="color-scheme" content="light dark">
-  <!-- FUENTES PROPIAS (./fonts): se precargan las dos que se ven primero -->
   <link rel="preload" href="./fonts/sans-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="./fonts/mono-700.woff2" as="font" type="font/woff2" crossorigin>
   <title>Julián Barrera — Data Science</title>
-  <!-- Vista previa al compartir el enlace (WhatsApp, Slack, LinkedIn…) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Julián Barrera — Data Science">
   <meta property="og:description" content="Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.">
   <meta name="twitter:card" content="summary">
   <script>
-    /* Arranque: marca JS activo y decide si se muestra el preloader (solo 1ª visita de la sesión). */
     (function (d) {
       var h = d.documentElement, skip = false;
       h.classList.add('js');
       try { skip = !!sessionStorage.getItem('jb-seen'); } catch (e) {}
-      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { skip = true; h.classList.add('reduced'); }
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true;
       h.classList.add(skip ? 'no-loader' : 'loading');
-      /* TEMA: preferencia guardada por el visitante o, si no hay, la del sistema/navegador (prefers-color-scheme). Todo local, sin cookies ni peticiones. */
       var t = null;
       try { t = localStorage.getItem('jb-theme'); } catch (e) {}
       if (t !== 'light' && t !== 'dark') t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
@@ -32,12 +28,6 @@
     })(document);
   </script>
   <style>
-    /* =========================================================
-       DISEÑO: colores, tipografía y tamaños. Sin dependencias externas.
-       ========================================================= */
-    /* Fuentes alojadas en la propia web (carpeta ./fonts). Ambas con licencia SIL OFL 1.1 — ver ./fonts/LICENSES.txt
-       · JB Sans = Liberation Sans (mismas medidas y aspecto que Arial)
-       · JB Mono = Courier Prime (máquina de escribir, mismas medidas que Courier New) */
     @font-face { font-family:"JB Sans"; src:url("./fonts/sans-400.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
     @font-face { font-family:"JB Sans"; src:url("./fonts/sans-700.woff2") format("woff2"); font-weight:700 900; font-style:normal; font-display:swap; }
     @font-face { font-family:"JB Mono"; src:url("./fonts/mono-400.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
@@ -47,9 +37,8 @@
       --ease:cubic-bezier(.19,1,.22,1); --ease-io:cubic-bezier(.77,0,.18,1);
       --sans:"JB Sans",Arial,Helvetica,sans-serif;
       --mono:"JB Mono","Courier New",monospace;
-      --hl:#ffe93b; --pop:#ffe93b; --hl-ink:#181818; --bar:rgba(246,244,238,.9); color-scheme:light;
+      --hl:#ffe93b; --pop:#ffe93b; --bar:rgba(246,244,238,.9); color-scheme:light;
     }
-    /* TEMA OSCURO */
     :root[data-theme="dark"] {
       --paper:#121210; --ink:#ecebe4; --muted:#a3a29a; --line:#3b3b36; --olive:#8d937f;
       --hl:rgba(223,255,108,.3); --pop:var(--acid); --bar:rgba(18,18,16,.86); color-scheme:dark;
@@ -71,7 +60,6 @@
     .skip { position:fixed; top:12px; left:12px; z-index:100; padding:12px; background:var(--acid); color:#181818; transform:translateY(-150%); }
     .skip:focus { transform:none; }
 
-    /* Grano de papel (textura de revista impresa) */
     body { transition:background-color .5s var(--ease), color .5s var(--ease); }
     body::after {
       content:""; position:fixed; inset:0; z-index:70; pointer-events:none; opacity:.06; mix-blend-mode:multiply;
@@ -80,7 +68,6 @@
 
     :root[data-theme="dark"] body::after { mix-blend-mode:screen; opacity:.035; }
 
-    /* ---------- PRELOADER ---------- */
     .loader {
       position:fixed; inset:0; z-index:90; display:none; flex-direction:column; justify-content:space-between;
       padding:0 max(48px, calc((100% - 1440px) / 2)) 36px; background:var(--paper);
@@ -96,25 +83,20 @@
     .loader-num { font-size:clamp(96px,17vw,260px); font-weight:900; line-height:.8; letter-spacing:-.08em; font-variant-numeric:tabular-nums; }
     .loader-num em { font-style:normal; color:var(--olive); }
 
-    /* ---------- TOPBAR ---------- */
     .topbar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:83px; }
     .topbar::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--ink); transform-origin:left; }
     html.js .topbar::after { transform:scaleX(0); transition:transform 1.4s var(--ease-io) .15s; }
     html.js .topbar > * { opacity:0; transform:translateY(-8px); transition:opacity .8s var(--ease) .55s, transform .8s var(--ease) .55s; }
     body.ready .topbar::after, body.ready .topbar > * { transform:none; opacity:1; }
     .name { text-decoration:none; font-size:15px; font-weight:900; letter-spacing:-.5px; }
-    .topbar-note,.eyebrow,.section-label,.project-number,.cover-label,.project-type,.footer,.hero-foot,.mb-index { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
-    .topbar-note { display:flex; align-items:center; gap:9px; }
+    .eyebrow,.section-label,.project-number,.cover-label,.project-type,.footer,.hero-foot,.mb-index { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
     .topbar-right { display:flex; align-items:center; gap:14px; margin-right:-1px; }
     .top-links { display:flex; align-items:center; gap:2px; }
-    /* En oscuro, los logos (sean del color que sean en ./img) se pintan en el color del texto */
     :root[data-theme="dark"] img.mb-ico { filter:brightness(0) invert(.93) sepia(.08); }
-    /* Botón de tema (sol / luna) */
     .theme-btn { position:relative; display:grid; place-items:center; width:36px; height:36px; padding:0; border:0; border-radius:50%; background:none; color:var(--ink); cursor:pointer; }
     .theme-btn::before { content:""; position:absolute; inset:0; border-radius:50%; background:var(--paper); border:1px solid var(--ink); transform:scale(0); transition:transform .5s var(--ease); }
     .theme-btn svg { position:relative; width:18px; height:18px; transition:transform .7s var(--ease); }
-    .theme-btn:hover::before, .theme-btn:focus-visible::before { transform:scale(1); }
-    .theme-btn:hover svg { transform:rotate(-25deg); }
+    .theme-btn:focus-visible::before { transform:scale(1); }
     .theme-btn .i-sun { display:none; }
     :root[data-theme="dark"] .theme-btn .i-sun { display:block; }
     :root[data-theme="dark"] .theme-btn .i-moon { display:none; }
@@ -122,10 +104,8 @@
     .top-sep { width:1px; height:18px; background:var(--line); }
     .lang { display:flex; align-items:center; gap:6px; font:700 11px/1 var(--mono); letter-spacing:1px; color:var(--muted); }
     .lang button { appearance:none; border:0; padding:3px 1px 2px; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; color:var(--muted); font:inherit; letter-spacing:inherit; cursor:pointer; transition:color .3s, background-size .5s var(--ease); }
-    .lang button:hover { color:var(--ink); }
     .lang button[aria-pressed="true"] { color:var(--ink); background-size:100% .55em; }
 
-    /* ---------- HERO (escenario fijado) ---------- */
     .hero-track { position:relative; }
     .hero-sticky { position:sticky; top:0; height:100vh; height:100svh; overflow:hidden; }
     body.no-pin .hero-sticky { position:relative; height:auto; overflow:visible; }
@@ -141,31 +121,24 @@
     .intro-copy { padding-bottom:3px; }
     html.js .intro-copy { opacity:0; transform:translateY(18px); transition:opacity 1s var(--ease) .75s, transform 1s var(--ease) .75s; }
     body.ready .intro-copy { opacity:1; transform:none; }
-    /* Se desvanece con el scroll a la vez que aparecen el eyebrow y la etiqueta del índice (--ic lo controla el JS) */
     .intro-copy > p { opacity:var(--ic,1); transform:translateY(calc((1 - var(--ic,1)) * -14px)); visibility:var(--icv,visible); }
-    .intro-copy p { margin:0; max-width:270px; font-size:17px; line-height:1.55; letter-spacing:-.3px; }
-    .intro-copy .byline { margin-top:0; font-family:var(--mono); font-size:11px; line-height:1.6; letter-spacing:.3px; }
-    /* Subrayador amarillo: mismo efecto en temas de portada, nota del topbar y títulos de proyecto */
-    .topic, .topbar-note .sc, h3 .ul { text-decoration:none; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .5s var(--ease); }
-    .topic:hover, .topic:focus-visible, .topbar-note:hover .sc, .project-link:focus-visible h3 .ul { background-size:100% .55em; }
+    .byline { margin:0; max-width:270px; font:400 11px/1.6 var(--mono); letter-spacing:.3px; }
+    h3 .ul { text-decoration:none; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .5s var(--ease); }
+    .project-link:focus-visible h3 .ul { background-size:100% .55em; }
 
-    /* Letras partidas (las crea el JS) */
     .split { letter-spacing:0; }
     .ch { display:inline-block; overflow:hidden; padding-right:.1em; margin-right:-.185em; transition:transform .55s cubic-bezier(.3,1.8,.5,1), color .3s; }
     .ch-in { display:inline-block; }
     html.js .title .ch-in { transform:translateY(108%); }
     body.ready .title .ch-in { transform:none; transition:transform 1.15s var(--ease) calc(var(--i) * 42ms + .15s); }
-    .ch.sq .ch-in { color:var(--olive); }
     @media (hover:hover) { .title .ch:hover { transform:translateY(-.065em); color:var(--olive); } }
 
-    /* Línea divisoria + etiqueta del índice */
     .section-label { position:relative; display:flex; justify-content:space-between; align-items:center; margin:0 0 26px; padding:12px 0; }
     .section-label::before, .section-label::after { content:""; position:absolute; left:0; right:0; height:1px; background:var(--ink); transform:scaleX(var(--lp,1)); }
     .section-label::before { top:0; } .section-label::after { bottom:0; }
     .section-label > * { opacity:var(--lt,1); }
     .section-label h2 { margin:0; font:inherit; }
 
-    /* Pie del hero: coordenadas + pista de scroll */
     .hero-foot { position:absolute; left:0; right:0; bottom:clamp(18px,4.2vh,44px); opacity:var(--cue,1); color:var(--muted); font-size:10px; }
     body.no-pin .hero-foot { display:none; }
     .hero-foot-in { display:flex; justify-content:center; align-items:end; }
@@ -176,9 +149,7 @@
     .cue-line { position:relative; display:block; width:1px; height:54px; overflow:hidden; background:var(--line); }
     .cue-line::after { content:""; position:absolute; left:0; top:0; width:1px; height:100%; background:var(--ink); transform:translateY(-100%); animation:cueFlow 2.8s cubic-bezier(.65,0,.35,1) infinite; }
     @keyframes cueFlow { 0% { transform:translateY(-100%); } 55% { transform:translateY(0); } 100% { transform:translateY(100%); } }
-    .cue:hover { color:var(--ink); }
 
-    /* ---------- PROYECTOS ---------- */
     #projects { position:relative; z-index:1; will-change:transform; }
     .project-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:36px; row-gap:44px; }
     .project { min-width:0; transition:opacity .5s var(--ease), filter .5s var(--ease); }
@@ -193,9 +164,6 @@
     html.js .cover-label { opacity:0; transition:opacity .8s var(--ease) calc(var(--cd,0s) + .7s); }
     html.js .cover.in .cover-label { opacity:1; }
     .cover-label span:last-child { text-align:right; }
-        .cover-cyber { background:#2549ea; color:white; }
-    .cover-football { background:#17261d; color:var(--acid); }
-    .cover-climate { background:var(--acid); }
     .project-meta { display:flex; align-items:center; gap:12px; margin:19px 0 10px; }
     .project-number { display:inline-grid; place-items:center; width:25px; height:23px; border:1px solid var(--ink); font-size:10px; flex-shrink:0; transition:background .3s, color .3s; }
     .project-type { color:var(--muted); font-size:10px; letter-spacing:.5px; line-height:1.5; }
@@ -207,16 +175,11 @@
     .description { margin:15px 0 0; max-width:600px; color:var(--muted); font-size:14px; line-height:1.7; }
     .project-link:focus-visible .arrow { background:var(--pop); color:#181818; border-color:#181818; }
 
-    /* Animaciones de reveal al hacer scroll */
     html.js [data-reveal] { opacity:0; transform:translateY(26px); transition:opacity 1s var(--ease), transform 1s var(--ease); transition-delay:calc(var(--cd,0s) + var(--d,0s)); }
     html.js [data-reveal].in { opacity:1; transform:none; }
 
-    /* Animaciones vivas dentro de las portadas (solo corren cuando son visibles) */
-    /* Portadas con fotografía */
-    .cover-photo { background:#050505; color:#f6f4ee; }
-    .cover-photo { aspect-ratio:auto; }
+    .cover-photo { aspect-ratio:auto; background:#050505; color:#f6f4ee; }
     .cover-photo img.art { position:relative; inset:auto; display:block; width:100%; height:auto; }
-    /* Sobre fotos, las etiquetas van en "pegatinas" de papel para leerse sobre cualquier imagen */
     .cover-photo .cover-label { align-items:flex-start; }
     .cover-photo .cover-label span, .cover-photo .cover-caption { padding:5px 7px 4px; background:var(--paper); color:var(--ink); line-height:1.25; }
     .cover-photo .cover-caption { right:auto; max-width:calc(100% - 44px); }
@@ -224,23 +187,17 @@
     html.js .cover-caption { opacity:0; transition:opacity .8s var(--ease) calc(var(--cd,0s) + .8s); }
     html.js .cover.in .cover-caption { opacity:1; }
 
-    /* ---------- MARQUEE ---------- */
     .marquee { margin-top:110px; overflow:hidden; border-block:1px solid var(--ink); padding:20px 0 22px; }
     .marquee-track { display:flex; width:max-content; will-change:transform; }
     .mq-group { display:flex; align-items:center; flex-shrink:0; font-size:clamp(54px,9vw,150px); }
     .mq-item { cursor:default; padding:0 .22em .1em; font-size:1em; font-weight:900; line-height:1.05; letter-spacing:-.06em; white-space:nowrap; text-decoration:none; transition:color .35s, -webkit-text-stroke-color .35s; }
     .mq-item.outline { color:transparent; -webkit-text-stroke:1.5px var(--ink); }
-    .mq-item:hover { color:var(--olive); }
-    .mq-item.outline:hover { color:var(--ink); }
     .mq-sep { display:inline-block; flex-shrink:0; width:.17em; height:.17em; margin:0 .1em; background:var(--olive); }
 
-    /* ---------- FOOTER ---------- */
-    .footer-wrap { margin-top:0; }
     .footer { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:23px 0 28px; font-size:10px; line-height:1.7; letter-spacing:.4px; }
     .footer a { text-decoration:none; padding:5px 0; }
-    .footer a:hover { text-decoration:underline; text-underline-offset:4px; }
+    .footer a:focus-visible { text-decoration:underline; text-underline-offset:4px; }
 
-    /* ---------- MINIBAR (aparece tras el hero) ---------- */
     .minibar { position:fixed; top:0; left:0; right:0; z-index:50; background:var(--bar); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--ink); transform:translateY(-102%); visibility:hidden; transition:transform .7s var(--ease), visibility 0s linear .7s; }
     .minibar.show { transform:none; visibility:visible; transition:transform .7s var(--ease); }
     .minibar-in { display:flex; align-items:center; justify-content:space-between; gap:20px; height:54px; }
@@ -249,9 +206,8 @@
     .mb-link::before { content:""; position:absolute; inset:0; border-radius:50%; background:var(--paper); border:1px solid var(--ink); transform:scale(0); transition:transform .5s var(--ease); }
     .mb-link .mb-ico { position:relative; display:block; width:18px; height:18px; transition:transform .5s var(--ease); }
     .mb-link::after { content:attr(data-label); position:absolute; top:calc(100% + 12px); left:50%; padding:4px 6px 3px; background:var(--ink); color:var(--paper); font:700 9px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; opacity:0; transform:translate(-50%,-4px); pointer-events:none; transition:opacity .3s var(--ease), transform .4s var(--ease); }
-    .mb-link:hover::before, .mb-link:focus-visible::before { transform:scale(1); }
-    .mb-link:hover .mb-ico { transform:translateY(-1px) scale(1.08); }
-    .mb-link:hover::after, .mb-link:focus-visible::after { opacity:1; transform:translate(-50%,0); }
+    .mb-link:focus-visible::before { transform:scale(1); }
+    .mb-link:focus-visible::after { opacity:1; transform:translate(-50%,0); }
     .mb-link:focus-visible { outline-offset:2px; }
     .mb-sep { width:1px; height:18px; margin:0 8px; background:var(--line); }
     .mb-left { display:flex; align-items:center; margin-left:-9px; }
@@ -262,10 +218,16 @@
     .mb-title { min-width:22ch; color:var(--muted); }
     .mb-progress { position:absolute; left:0; bottom:-1px; width:100%; height:2px; background:var(--ink); transform:scaleX(var(--sp,0)); transform-origin:left; }
 
-    /* ---------- CURSOR "VIEW" ---------- */
     .cursor { position:fixed; top:0; left:0; z-index:60; display:grid; place-items:center; width:98px; height:98px; margin:-49px 0 0 -49px; border:1px solid var(--ink); border-radius:50%; background:var(--pop); color:#181818; font:700 11px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; pointer-events:none; transform:scale(0); will-change:transform; }
 
     @media (hover:hover) {
+      .theme-btn:hover::before, .mb-link:hover::before { transform:scale(1); }
+      .theme-btn:hover svg { transform:rotate(-25deg); }
+      .mb-link:hover .mb-ico { transform:translateY(-1px) scale(1.08); }
+      .mb-link:hover::after { opacity:1; transform:translate(-50%,0); }
+      .lang button:hover, .cue:hover, .mq-item.outline:hover { color:var(--ink); }
+      .mq-item:hover { color:var(--olive); }
+      .footer a:hover { text-decoration:underline; text-underline-offset:4px; }
       .project-grid:has(.project-link:hover) .project:not(:hover) { opacity:.42; filter:grayscale(.85); }
       .project-link:hover .art { --sc:1.05; }
       .project-link:hover h3 .ul { background-size:100% .55em; }
@@ -282,7 +244,6 @@
       .loader { padding-inline:28px; }
       .intro { grid-template-columns:1fr 230px; gap:24px; }
       h1 { font-size:calc((100vw - 310px) / 7.3); }
-      .intro-copy p { font-size:15px; }
       .project-grid { column-gap:26px; }
       h3 { font-size:29px; }
       .cover-label { top:14px; left:16px; right:16px; font-size:8px; }
@@ -295,22 +256,17 @@
       .loader-name { font-size:13px; }
       .loader-note { font-size:8px; }
       .topbar { min-height:65px; gap:14px; }
-      /* Móvil: sin nombre arriba; logos a la izquierda, idioma y tema a la derecha */
       .topbar > .name { display:none; }
-      .topbar-right { flex:1; }
+      .topbar-right { flex:1; gap:8px; }
       .top-links { margin-left:-9px; margin-right:auto; }
       .top-sep { display:none; }
-      .topbar-note { font-size:8px; letter-spacing:.5px; }
       .lang { font-size:10px; }
-      .topbar-right { gap:8px; }
       .intro { grid-template-columns:1fr; gap:25px; padding:34px 0 30px; }
       h1 { font-size:calc((100vw - 36px) / 6.95); }
       .eyebrow { font-size:10px; margin-bottom:17px; }
-      /* Móvil: titular y textos a todo el ancho (el JS ajusta el tamaño de cada línea al ancho de la página) */
       .intro-copy { display:block; }
-      .intro-copy p { max-width:none; font-size:14px; line-height:1.35; white-space:nowrap; }
-      .intro-copy .byline { margin-top:0; line-height:1.35; }
-      .intro-copy .byline br { display:none; }
+      .byline { max-width:none; line-height:1.35; white-space:nowrap; }
+      .byline br { display:none; }
       .section-label { font-size:10px; margin-bottom:20px; }
       .project-grid { grid-template-columns:1fr; row-gap:33px; }
       .project:nth-child(even) { --cd:0s; }
@@ -322,7 +278,6 @@
       .marquee { margin-top:72px; padding:14px 0 16px; }
       .mb-title, .mb-k { display:none; }
       .minibar-in { height:48px; }
-      .footer-wrap { margin-top:0; }
       .footer { font-size:9px; align-items:start; }
       .footer a { white-space:nowrap; }
     }
@@ -338,13 +293,11 @@
 <body>
   <a class="skip" href="#projects" data-i18n="skip">Skip to projects</a>
 
-  <!-- PRELOADER -->
   <div class="loader" aria-hidden="true">
-    <div class="loader-top"><span class="loader-name">JULIÁN BARRERA.</span><span class="loader-note" data-i18n="ldNote">Data Science</span></div>
+    <div class="loader-top"><span class="loader-name">J. BARRERA.</span><span class="loader-note" data-i18n="ldNote">Data Science</span></div>
     <div class="loader-foot"><div class="loader-num"><span id="ld-num">000</span><em>%</em></div><span data-i18n="ldFoot">Loading<br>independent data projects</span></div>
   </div>
 
-  <!-- MINIBAR: aparece al dejar atrás la portada -->
   <nav class="minibar" aria-label="Quick navigation" data-i18n-attr="aria-label:navAria">
     <div class="page minibar-in">
       <div class="mb-left">
@@ -357,15 +310,12 @@
       <div class="mb-links">
         <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
         <span class="mb-sep" aria-hidden="true"></span>
-        <!-- ENLACE GITHUB -->
         <a class="mb-link" href="https://github.com/barrierj93" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria">
           <img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18">
         </a>
-        <!-- ENLACE LINKEDIN: sustituye SOLO # por la URL de tu perfil. -->
         <a class="mb-link" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria">
           <img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18">
         </a>
-        <!-- ENLACE EMAIL: sustituye SOLO # por mailto:tu-email@gmail.com -->
         <a class="mb-link" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria">
           <img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18">
         </a>
@@ -376,24 +326,19 @@
 
   <div class="cursor" aria-hidden="true" data-i18n="view">View ↗</div>
 
-  <!-- PORTADA: escena fijada que pasa de "centrado" a "índice" con el scroll -->
   <div class="hero-track" id="top">
     <div class="hero-sticky">
       <div class="page">
         <header class="topbar">
-          <!-- NOMBRE: puedes cambiarlo aquí, en el preloader, en la minibar y en el pie de página. -->
-          <a class="name" href="#top">JULIÁN BARRERA.</a>
+          <a class="name" href="#top">J. BARRERA.</a>
           <div class="topbar-right">
-            <!-- Enlaces de contacto de la portada: copian automáticamente las URLs de la barra fija (solo hay que editarlas allí) -->
             <div class="top-links">
               <a class="mb-link" data-sync="GitHub" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
               <a class="mb-link" data-sync="LinkedIn" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
               <a class="mb-link" data-sync="Email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
             </div>
             <span class="top-sep" aria-hidden="true"></span>
-            <!-- IDIOMA: se elige solo según el navegador; estos botones permiten cambiarlo a mano -->
             <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:langAria"><button type="button" data-lang="es" aria-pressed="false">ES</button><span aria-hidden="true">/</span><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
-            <!-- TEMA: claro / oscuro -->
             <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
           </div>
         </header>
@@ -407,7 +352,7 @@
               <p class="byline" data-i18n="byline">A collection of <br>independent projects.</p>
             </div>
           </section>
-          <div class="section-label"><h2 id="projects-heading" data-i18n="label">The project index</h2><span id="label-count">01 — 04</span></div>
+          <div class="section-label"><h2 id="projects-heading" data-i18n="label">Index</h2><span id="label-count">01 — 04</span></div>
         </div>
       </div>
       <div class="hero-foot page">
@@ -426,11 +371,9 @@
       <div class="project-grid">
 
         <article class="project" id="p1" data-title="Overdue Sessions" data-i18n-attr="data-title:p1.title">
-          <!-- ENLACE 1: URL de Sesiones Pendientes. -->
           <a class="project-link" href="https://barrierj93.github.io/sesiones-EDA/" target="_blank" rel="noopener noreferrer" aria-label="Overdue Sessions — open project in a new tab" data-i18n-attr="aria-label:p1.aria">
-            <div class="cover cover-mental cover-photo" aria-hidden="true">
-              <!-- IMAGEN DE PORTADA: guarda la foto como ./img/sesiones-cover.jpg (o cambia aquí el nombre) -->
-              <img class="art" src="./img/sesiones-cover.jpg" alt="" loading="lazy" decoding="async">
+            <div class="cover cover-photo" aria-hidden="true">
+              <img class="art" src="./img/sesiones-cover.jpg" alt="" width="1920" height="941" loading="lazy" decoding="async">
             </div>
             <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">01</span><span class="project-type" data-i18n="p1.type">Exploratory Data Analysis | Data Visualization</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
@@ -442,12 +385,10 @@
         </article>
 
         <article class="project" id="p2" data-title="CTI Report" data-i18n-attr="data-title:p2.title">
-          <!-- ENLACE 2: sustituye SOLO # por la URL de Cyber Threat Intel Report. Mientras sea #, el cursor muestra "Soon" y el clic no hace nada. -->
           <a class="project-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="CTI Report — open project in a new tab" data-i18n-attr="aria-label:p2.aria">
-            <div class="cover cover-cyber cover-photo lab-dark cap-light" aria-hidden="true">
+            <div class="cover cover-photo" aria-hidden="true">
               <div class="cover-label"><span data-i18n="p2.l1">Cyber threat intelligence</span><span data-i18n="p2.l2">Follow the signal ↗</span></div>
-              <!-- IMAGEN DE PORTADA: guarda la foto como ./img/cyber-cover.jpg (o cambia aquí el nombre) -->
-              <img class="art" src="./img/cyber-cover.jpg" alt="" loading="lazy" decoding="async">
+              <img class="art" src="./img/cyber-cover.jpg" alt="" width="1624" height="968" loading="lazy" decoding="async">
               <span class="cover-caption" data-i18n="p2.cap">Campaigns. Vectors. Sectors. Connections.</span>
             </div>
             <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">02</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span></div>
@@ -461,9 +402,8 @@
 
         <article class="project" id="p3" data-title="Bosman Ruling" data-i18n-attr="data-title:p3.title">
           <a class="project-link" href="https://barrierj93.github.io/EDA_Bosman_Ruling/" target="_blank" rel="noopener noreferrer" aria-label="Bosman Ruling — open project in a new tab" data-i18n-attr="aria-label:p3.aria">
-            <div class="cover cover-football cover-photo lab-dark cap-dark" aria-hidden="true">
-              <!-- IMAGEN DE PORTADA: guarda la foto como ./img/bosman-cover.jpg (o cambia aquí el nombre) -->
-              <img class="art" src="./img/bosman-cover.jpg" alt="" loading="lazy" decoding="async">
+            <div class="cover cover-photo" aria-hidden="true">
+              <img class="art" src="./img/bosman-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async">
             </div>
             <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">03</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
@@ -475,11 +415,9 @@
         </article>
 
         <article class="project" id="p4" data-title="Global CO₂ Emissions" data-i18n-attr="data-title:p4.title">
-          <!-- ENLACE 4: URL de Global CO2 Emissions. -->
           <a class="project-link" href="https://public.tableau.com/app/profile/juli.n.barrera.antoniolli/viz/CO2Dashboard_17261787616320/Dash_dark3" target="_blank" rel="noopener noreferrer" aria-label="Global CO2 Emissions — open project in a new tab" data-i18n-attr="aria-label:p4.aria">
-            <div class="cover cover-climate cover-photo lab-dark cap-dark" aria-hidden="true">
-              <!-- IMAGEN DE PORTADA: guarda la foto como ./img/co2-cover.jpg (o cambia aquí el nombre) -->
-              <img class="art" src="./img/co2-cover.jpg" alt="" loading="lazy" decoding="async">
+            <div class="cover cover-photo" aria-hidden="true">
+              <img class="art" src="./img/co2-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async">
             </div>
             <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">04</span><span class="project-type" data-i18n="p4.type">Tableau | Data Analysis &amp; Visualization</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
@@ -494,7 +432,6 @@
     </section>
   </main>
 
-  <!-- MARQUEE DE SKILLS (justo encima del pie): reacciona a la velocidad y dirección del scroll. Los textos se editan en I18N (mq1…mq4) para cada idioma. -->
   <div class="marquee" aria-label="Skills" data-i18n-attr="aria-label:mqAria">
     <div class="marquee-track">
       <div class="mq-group">
@@ -529,12 +466,16 @@
       if (src) a.setAttribute('href', src.getAttribute('href'));
     });
 
-    /* ---------- Texto "scramble" (estética de datos) ---------- */
     const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/_';
+    const scrambling = new Set();
+    function stopScrambles() {
+      scrambling.forEach(el => { cancelAnimationFrame(el._scr); if (el.dataset.text != null) el.textContent = el.dataset.text; });
+      scrambling.clear();
+    }
     function scramble(el, text, dur = 650) {
       if (!el || reduce) { if (el && text != null) el.textContent = text; return; }
-      if (el.dataset.text == null) el.dataset.text = el.textContent;
-      const target = text != null ? text : el.dataset.text;
+      if (text != null) el.dataset.text = text; else if (el.dataset.text == null) el.dataset.text = el.textContent;
+      const target = el.dataset.text;
       cancelAnimationFrame(el._scr);
       const t0 = performance.now();
       const tick = now => {
@@ -545,12 +486,12 @@
           out += (i < shown || c === ' ') ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0];
         }
         el.textContent = out;
-        if (t < 1) el._scr = raf(tick);
+        if (t < 1) el._scr = raf(tick); else scrambling.delete(el);
       };
+      scrambling.add(el);
       el._scr = raf(tick);
     }
 
-    /* ---------- Partir titulares en letras ---------- */
     function split(el) {
       let i = 0;
       $$('.line', el).forEach(line => {
@@ -572,7 +513,6 @@
     }
     const title = $('.title');
 
-    /* ---------- IDIOMA (ES / EN): se elige según el navegador; se puede cambiar con los botones ES / EN ---------- */
     const I18N = {
       en: {
         pageTitle: 'Julián Barrera — Data Science',
@@ -580,10 +520,10 @@
         skip: 'Skip to projects', ldNote: 'Data Science', ldFoot: 'Loading<br>independent data projects',
         navAria: 'Quick navigation', home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
         liAria: 'LinkedIn — opens in a new tab', email: 'Email', emailAria: 'Send an email', index: 'Index',
-        view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', note: 'Independent data projects', langAria: 'Language',
+        view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', langAria: 'Language',
         eyebrow: 'Research. Analysis. Visual stories.', h1a: 'EXPLORING', h1b: 'DATA', h1aria: 'Exploring data.',
-        byline: 'A collection of <br>independent projects.', label: 'The project index',
-        explore: 'Explore', cueAria: 'Scroll to the project index', hfRight: 'Index 01 — 04 ↓',
+        byline: 'A collection of <br>independent projects.', label: 'Index',
+        explore: 'Explore', cueAria: 'Scroll to the project index',
         type: 'Data Analysis &amp; Visualization',
         'p1.title': 'Overdue Sessions', 'p1.type': 'Exploratory Data Analysis | Data Visualization', 'p1.aria': 'Overdue Sessions — open project in a new tab',
         'p1.desc': 'An exploratory data analysis of the state of mental health care access in Spain. The project examines waiting times, coverage gaps and regional disparities in public psychological services — combining open government data with web-scraped sources to surface a largely invisible public health issue.',
@@ -603,10 +543,10 @@
         skip: 'Saltar a los proyectos', ldNote: 'Data Science', ldFoot: 'Cargando<br>proyectos de datos independientes',
         navAria: 'Navegación rápida', home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
         liAria: 'LinkedIn — se abre en una pestaña nueva', email: 'Correo', emailAria: 'Enviar un correo', index: 'Índice',
-        view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', note: 'Proyectos de datos independientes', langAria: 'Idioma',
+        view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', langAria: 'Idioma',
         eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'EXPLORANDO', h1b: 'DATOS', h1aria: 'Explorando datos.',
-        byline: 'Una colección de <br>proyectos independientes.', label: 'Índice de proyectos',
-        explore: 'Explorar', cueAria: 'Ir al índice de proyectos', hfRight: 'Índice 01 — 04 ↓',
+        byline: 'Una colección de <br>proyectos independientes.', label: 'Índice',
+        explore: 'Explorar', cueAria: 'Ir al índice de proyectos',
         type: 'Análisis y visualización de datos',
         'p1.title': 'Sesiones Pendientes', 'p1.type': 'Análisis exploratorio de datos | Visualización de datos', 'p1.aria': 'Sesiones Pendientes — abrir el proyecto en una pestaña nueva',
         'p1.desc': 'Un análisis exploratorio del acceso a la atención en salud mental en España. El proyecto examina los tiempos de espera, las carencias de cobertura y las desigualdades territoriales en los servicios públicos de psicología, combinando datos abiertos oficiales con fuentes obtenidas mediante web scraping para sacar a la luz un problema de salud pública en gran parte invisible.',
@@ -631,6 +571,7 @@
     const T = k => I18N[LANG][k];
     function applyLang(lang) {
       LANG = lang;
+      stopScrambles();
       const d = I18N[lang];
       root.lang = lang;
       document.title = d.pageTitle;
@@ -649,42 +590,36 @@
     }
     applyLang(LANG);
 
-    /* ---------- Elementos ---------- */
     const track = $('.hero-track'), sticky = $('.hero-sticky'), topbar = $('.topbar');
     const intro = $('.intro'), label = $('.section-label'), heroFoot = $('.hero-foot');
     const projects = $('#projects'), minibar = $('.minibar'), mbProgress = $('.mb-progress');
     const mqTrack = $('.marquee-track'), cursorEl = $('.cursor');
 
-    // Duplica el grupo del marquee para el bucle infinito (la copia no es navegable)
     function cloneMarquee() {
       const groups = $$('.mq-group', mqTrack);
       groups.slice(1).forEach(g => g.remove());
       for (let k = 0; k < 2; k++) {
         const g = groups[0].cloneNode(true);
         g.setAttribute('aria-hidden', 'true');
-        $$('a', g).forEach(a => a.setAttribute('tabindex', '-1'));
         mqTrack.appendChild(g);
       }
     }
     cloneMarquee();
 
-    const st = { pin: false, D: 0, offset: 0, H: 0, threshold: 0, hs: 0, s: scrollY, sS: scrollY, prevS: scrollY, last: -1,
+    const st = { pin: false, D: 0, offset: 0, threshold: 0, lastS: -1, cHidden: false, hs: 0, s: scrollY, sS: scrollY, prevS: scrollY, last: -1,
                  mqX: 0, mqW: 1, mqSpeed: 1, mqDir: 1, mqSkew: 0, mqOn: false, eyebrowDone: false, labelDone: false,
                  cx: innerWidth / 2, cy: innerHeight / 2, px: innerWidth / 2, py: innerHeight / 2, csc: 0, con: false,
                  lw: innerWidth, lh: innerHeight };
     const LERP = fine ? 0.11 : 0.24;
 
-    /* ---------- Medición: calcula la escena de la portada ---------- */
     function setNoPin() {
       st.pin = false;
       body.classList.add('no-pin');
-      body.classList.remove('at-hero');
       sticky.removeAttribute('style'); track.style.height = '';
       projects.style.marginTop = ''; projects.style.transform = '';
       st.threshold = label.getBoundingClientRect().bottom + scrollY;
+      st.lastS = -1;
     }
-    // "DATA." se escala para ocupar exactamente el mismo ancho de tinta que "EXPLORING" (bordes izq. y dcho. alineados).
-    // Si el bloque resultante es demasiado alto para la pantalla, se reduce todo el titular proporcionalmente.
     const inkCtx = document.createElement('canvas').getContext('2d');
     function ink(chEl) {
       const cs = getComputedStyle(chEl), fs = parseFloat(cs.fontSize);
@@ -706,15 +641,11 @@
       l2.style.fontSize = r.toFixed(4) + 'em';
       let fs = parseFloat(getComputedStyle(title).fontSize);
       const H = sticky.clientHeight, base = fs;
-      // Escritorio/tablet: el titular llega como máximo hasta la mitad horizontal de la pantalla (con el zoom inicial incluido)
       if (innerWidth > 680) fs = Math.min(fs, fs * ((innerWidth / 2 - a.l) / 1.06) / (a.r - a.l));
-      // Móvil: el titular ocupa todo el ancho de la página
       else { const box = title.parentElement.getBoundingClientRect(); fs = fs * (box.right - a.l) / (a.r - a.l); }
-      // Altura: si no cabe, se reduce para que la escena de scroll siga funcionando
       const maxT = Math.min(H - 330, H * 0.5);
       if (fs * 0.84 * (1 + r) + 10 > maxT && maxT > 120) fs = (maxT - 10) / (0.84 * (1 + r));
       if (fs !== base) title.style.fontSize = fs.toFixed(2) + 'px';
-      // Móvil: segunda pasada de corrección (el tamaño no escala del todo lineal) para clavar el borde derecho
       if (innerWidth <= 680) {
         const box = title.parentElement.getBoundingClientRect(), a1 = lineInk(l1);
         fs = fs * (box.right - a1.l) / (a1.r - a1.l);
@@ -725,7 +656,6 @@
       l2.style.marginLeft = (a2.l - b2.l).toFixed(2) + 'px';
       fitCopy();
     }
-    // Móvil: cada texto de la portada en una línea que ocupa exactamente el ancho de la página
     function fitCopy() {
       const ps = $$('.intro-copy > p');
       ps.forEach(p => { p.style.fontSize = ''; });
@@ -759,16 +689,15 @@
 
       if (labelBottom + 40 > H || offset < 12) { setNoPin(); return; }
 
-      st.pin = true; st.H = H; st.offset = offset;
+      st.pin = true; st.offset = offset;
       st.D = Math.round(Math.max(offset * 1.35, H * 0.8));
       st.hs = innerWidth > 680 ? 0.06 : 0;
       track.style.height = (H + st.D) + 'px';
       projects.style.marginTop = Math.round(labelBottom + 26 - H) + 'px';
       st.threshold = st.D + labelBottom;
-      st.last = -1;
+      st.last = -1; st.lastS = -1;
     }
 
-    /* ---------- Render por frame ---------- */
     function render() {
       const s = st.s, sS = st.sS;
       if (st.pin && Math.abs(sS - st.last) > 0.05) {
@@ -785,12 +714,12 @@
         sticky.style.setProperty('--icv', ic < 0.02 ? 'hidden' : 'visible');
         sticky.style.setProperty('--cue', cue.toFixed(3));
         heroFoot.style.visibility = cue < 0.02 ? 'hidden' : '';
-        // El índice viaja con el scroll suavizado para que nunca choque con el bloque
         projects.style.transform = `translate3d(0,${(Math.min(s, st.D) - Math.min(sS, st.D)).toFixed(2)}px,0)`;
-        body.classList.toggle('at-hero', p < 0.02);
         if (p > 0.5 && !st.eyebrowDone) { st.eyebrowDone = true; scramble($('.eyebrow'), null, 900); }
         if (p > 0.72 && !st.labelDone) { st.labelDone = true; scramble($('#projects-heading'), null, 700); scramble($('#label-count'), null, 900); }
       }
+      if (s === st.lastS) return;
+      st.lastS = s;
       minibar.classList.toggle('show', s > st.threshold);
       const max = document.documentElement.scrollHeight - innerHeight;
       mbProgress.style.setProperty('--sp', max > 0 ? (s / max).toFixed(4) : 0);
@@ -813,7 +742,8 @@
       if (!fine) return;
       st.px += (st.cx - st.px) * 0.2; st.py += (st.cy - st.py) * 0.2;
       st.csc += ((st.con ? 1 : 0) - st.csc) * 0.16;
-      if (st.csc < 0.001 && !st.con) { cursorEl.style.transform = 'scale(0)'; return; }
+      if (st.csc < 0.001 && !st.con) { if (!st.cHidden) { cursorEl.style.transform = 'scale(0)'; st.cHidden = true; } return; }
+      st.cHidden = false;
       cursorEl.style.transform = `translate3d(${st.px.toFixed(1)}px,${st.py.toFixed(1)}px,0) scale(${st.csc.toFixed(3)})`;
     }
 
@@ -827,16 +757,13 @@
       raf(loop);
     }
 
-    /* ---------- Interacciones ---------- */
     $('.cue').addEventListener('click', () => {
       const top = st.pin ? st.D : projects.getBoundingClientRect().top + scrollY - 80;
       window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
     });
 
-    // Enlaces sin URL todavía: no navegan
-    $$('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+    $$('a[href="#"]').forEach(a => { a.setAttribute('aria-disabled', 'true'); a.addEventListener('click', e => e.preventDefault()); });
 
-    // Scramble al pasar el ratón por textos mono
     $$('[data-scramble]').forEach(el => el.addEventListener('mouseenter', () => scramble($('.sc', el))));
     $$('.project-link').forEach(link => link.addEventListener('mouseenter', () => {
       $$('.cover-label span, .project-type', link).forEach((el, i) => scramble(el, null, 520 + i * 120));
@@ -868,9 +795,7 @@
       cursorEl.remove();
     }
 
-    /* ---------- Observers ---------- */
     if ('IntersectionObserver' in window) {
-      // Se observa el artículo entero (no la portada: su clip-path inicial haría que el observer la viera con área 0)
       const io = new IntersectionObserver(es => es.forEach(e => {
         if (!e.isIntersecting) return;
         const t = e.target;
@@ -880,17 +805,8 @@
       }), { threshold: 0.06, rootMargin: '0px 0px -6% 0px' });
       $$('.project').forEach(el => io.observe(el));
 
-      // Animaciones de portada solo mientras están en pantalla
-      const live = new IntersectionObserver(es => es.forEach(e => {
-        e.target.classList.toggle('live', e.isIntersecting);
-        const svg = $('svg', e.target);
-        if (svg && svg.pauseAnimations) e.isIntersecting && !reduce ? svg.unpauseAnimations() : svg.pauseAnimations();
-      }));
-      $$('.cover').forEach(c => live.observe(c));
-
       new IntersectionObserver(es => es.forEach(e => { st.mqOn = e.isIntersecting; })).observe($('.marquee'));
 
-      // Proyecto activo → minibar
       const mbNum = $('#mb-num'), mbTitle = $('#mb-title');
       const activeIO = new IntersectionObserver(es => es.forEach(e => {
         if (!e.isIntersecting) return;
@@ -899,7 +815,7 @@
       }), { rootMargin: '-45% 0px -45% 0px' });
       $$('.project').forEach(p => activeIO.observe(p));
     } else {
-      $$('[data-reveal], .cover').forEach(el => el.classList.add('in', 'live'));
+      $$('[data-reveal], .cover').forEach(el => el.classList.add('in'));
     }
 
     $$('.lang button').forEach(b => b.addEventListener('click', () => {
@@ -913,7 +829,6 @@
       measure();
     }));
 
-    /* ---------- TEMA claro / oscuro ---------- */
     const mqDark = matchMedia('(prefers-color-scheme: dark)');
     function curTheme() { return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
     function syncThemeBtns() {
@@ -923,7 +838,6 @@
     }
     function setTheme(t, origin) {
       const go = () => { root.setAttribute('data-theme', t); syncThemeBtns(); };
-      // Transición circular desde el botón (View Transitions API); si el navegador no la soporta, cambio directo
       if (!document.startViewTransition || reduce || !origin) { go(); return; }
       const r = origin.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
       const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
@@ -937,25 +851,21 @@
       try { localStorage.setItem('jb-theme', t); } catch (e) {}
       setTheme(t, b);
     }));
-    // Si el visitante no ha elegido a mano, sigue al sistema en vivo
     const onSys = e => { let saved = null; try { saved = localStorage.getItem('jb-theme'); } catch (_) {} if (!saved) setTheme(e.matches ? 'dark' : 'light'); };
     mqDark.addEventListener ? mqDark.addEventListener('change', onSys) : mqDark.addListener(onSys);
     syncThemeBtns();
 
-    /* ---------- Resize ---------- */
     let rt;
     window.addEventListener('resize', () => {
       clearTimeout(rt);
       rt = setTimeout(() => {
         const w = innerWidth, h = innerHeight;
-        // En móvil la barra del navegador cambia la altura: solo recalculamos con cambios reales
         if (w !== st.lw || Math.abs(h - st.lh) > 120) { st.lw = w; st.lh = h; measure(); }
       }, 140);
     });
     window.addEventListener('load', measure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { st.lw = innerWidth; st.lh = innerHeight; measure(); });
 
-    /* ---------- Arranque ---------- */
     measure();
     st.s = st.sS = st.prevS = scrollY;
     render();
