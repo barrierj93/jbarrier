@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-view="grid">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.">
   <meta name="theme-color" content="#f6f4ee">
   <meta name="color-scheme" content="light dark">
-  <link rel="preload" href="./fonts/sans-700.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="./fonts/mono-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23181818'/%3E%3Cpath d='M36 13v24a9 9 0 0 1-18 0' fill='none' stroke='%23f6f4ee' stroke-width='8'/%3E%3Crect x='43' y='43' width='9' height='9' fill='%23dfff6c'/%3E%3C/svg%3E">
   <title>Julián Barrera — Data Science</title>
   <meta property="og:type" content="website">
   <meta property="og:title" content="Julián Barrera — Data Science">
@@ -15,16 +14,28 @@
   <meta name="twitter:card" content="summary">
   <script>
     (function (d) {
-      var h = d.documentElement, skip = false;
+      var h = d.documentElement, skip = false, t = null, v = null;
       h.classList.add('js');
       try { skip = !!sessionStorage.getItem('jb-seen'); } catch (e) {}
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true;
       h.classList.add(skip ? 'no-loader' : 'loading');
-      var t = null;
-      try { t = localStorage.getItem('jb-theme'); } catch (e) {}
+      try { t = localStorage.getItem('jb-theme'); v = localStorage.getItem('jb-view'); } catch (e) {}
       if (t !== 'light' && t !== 'dark') t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
       h.setAttribute('data-theme', t);
+      h.setAttribute('data-view', v === 'list' ? 'list' : 'grid');
       var m = d.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', t === 'dark' ? '#121210' : '#f6f4ee');
+      /* Preload the display fonts (skipped on file://, where Chrome blocks font preloads) */
+      if (location.protocol !== 'file:') ['sans', 'mono'].forEach(function (f) {
+        var l = d.createElement('link'); l.rel = 'preload'; l.as = 'font'; l.type = 'font/woff2'; l.crossOrigin = 'anonymous';
+        l.href = './fonts/' + f + '-700.woff2'; d.head.appendChild(l);
+      });
+      /* If a .webp cover is missing, fall back to the original .jpg */
+      window.jbImg = function (img) {
+        img.onerror = null;
+        var p = img.parentNode;
+        if (p && p.tagName === 'PICTURE') [].slice.call(p.querySelectorAll('source')).forEach(function (s) { p.removeChild(s); });
+        img.src = img.getAttribute('src');
+      };
     })(document);
   </script>
   <style>
@@ -32,8 +43,11 @@
     @font-face { font-family:"JB Sans"; src:url("./fonts/sans-700.woff2") format("woff2"); font-weight:700 900; font-style:normal; font-display:swap; }
     @font-face { font-family:"JB Mono"; src:url("./fonts/mono-400.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; }
     @font-face { font-family:"JB Mono"; src:url("./fonts/mono-700.woff2") format("woff2"); font-weight:700 900; font-style:normal; font-display:swap; }
+
+    /* ---------- Tokens ---------- */
     :root {
       --paper:#f6f4ee; --ink:#181818; --muted:#52524c; --acid:#dfff6c; --line:#c9c8be; --olive:#6b7060;
+      --rim:#fffefa; --shade:rgba(40,38,30,.2);
       --ease:cubic-bezier(.19,1,.22,1); --ease-io:cubic-bezier(.77,0,.18,1);
       --sans:"JB Sans",Arial,Helvetica,sans-serif;
       --mono:"JB Mono","Courier New",monospace;
@@ -41,40 +55,52 @@
     }
     :root[data-theme="dark"] {
       --paper:#121210; --ink:#ecebe4; --muted:#a3a29a; --line:#3b3b36; --olive:#8d937f;
+      --rim:#e8e5da; --shade:rgba(0,0,0,.55);
       --hl:rgba(223,255,108,.3); --pop:var(--acid); --bar:rgba(18,18,16,.86); color-scheme:dark;
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --paper:#121210; --ink:#ecebe4; --muted:#a3a29a; --line:#3b3b36; --olive:#8d937f;
+        --rim:#e8e5da; --shade:rgba(0,0,0,.55);
         --hl:rgba(223,255,108,.3); --pop:var(--acid); --bar:rgba(18,18,16,.86); color-scheme:dark;
       }
     }
+
+    /* ---------- Base ---------- */
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; scroll-padding-top:80px; }
     html.loading { overflow:hidden; }
-    body { margin:0; color:var(--ink); background:var(--paper); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:var(--sans); -webkit-font-smoothing:antialiased; transition:background-color .5s var(--ease), color .5s var(--ease); }
     a { color:inherit; }
+    button { font:inherit; }
     a:focus-visible, button:focus-visible { outline:3px solid #3159f6; outline-offset:7px; }
     ::selection { color:#181818; background:var(--acid); }
     .page { width:min(1440px,100% - 96px); margin-inline:auto; }
     .skip { position:fixed; top:12px; left:12px; z-index:100; padding:12px; background:var(--acid); color:#181818; transform:translateY(-150%); }
     .skip:focus { transform:none; }
-
-    body { transition:background-color .5s var(--ease), color .5s var(--ease); }
     body::after {
       content:""; position:fixed; inset:0; z-index:70; pointer-events:none; opacity:.06; mix-blend-mode:multiply;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-
     :root[data-theme="dark"] body::after { mix-blend-mode:screen; opacity:.035; }
 
-    .loader {
-      position:fixed; inset:0; z-index:90; display:none; flex-direction:column; justify-content:space-between;
-      padding:0 max(48px, calc((100% - 1440px) / 2)) 36px; background:var(--paper);
-      clip-path:inset(0 0 0 0); transition:clip-path 1s var(--ease-io);
-    }
-    html.js:not(.no-loader) .loader { display:flex; }
-    .loader.out { clip-path:inset(0 0 100% 0); }
+    /* ---------- Torn-paper reveal (shared by covers and the list preview) ---------- */
+    html.js .tear { clip-path:var(--ta0, inset(100% 0 0 0)); }
+    html.js .tear > .tear-in { clip-path:var(--tb0, inset(100% 0 0 0)); }
+    html.js .tear.in { clip-path:var(--ta1, inset(0)); transition:clip-path var(--tdur,1.25s) var(--ease-io) var(--tdel,0s); }
+    html.js .tear.in > .tear-in { clip-path:var(--tb1, inset(0)); transition:clip-path var(--tdur,1.25s) var(--ease-io) var(--tdel,0s); }
+    html.js .tear.in.done, html.js .tear.in.done > .tear-in { clip-path:none; transition:none; }
+
+    /* ---------- Loader ---------- */
+    .loader { position:fixed; inset:0; z-index:90; display:none; filter:drop-shadow(0 12px 16px var(--shade)); }
+    html.js:not(.no-loader) .loader { display:block; }
+    .loader-rim, .loader-sheet { position:absolute; inset:0; }
+    .loader-rim { background:var(--rim); }
+    .loader-sheet { display:flex; flex-direction:column; justify-content:space-between; padding:0 max(48px, calc((100% - 1440px) / 2)) 36px; background:var(--paper); }
+    .loader.tearing .loader-rim { clip-path:var(--lr0); }
+    .loader.tearing .loader-sheet { clip-path:var(--ls0); }
+    .loader.tearing.out .loader-rim { clip-path:var(--lr1); transition:clip-path 1.1s var(--ease-io); }
+    .loader.tearing.out .loader-sheet { clip-path:var(--ls1); transition:clip-path 1.1s var(--ease-io); }
     .loader-top { position:relative; display:flex; align-items:center; justify-content:space-between; min-height:83px; }
     .loader-top::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--ink); transform:scaleX(var(--lp,0)); transform-origin:left; }
     .loader-name { font-size:15px; font-weight:900; letter-spacing:-.5px; }
@@ -83,13 +109,14 @@
     .loader-num { font-size:clamp(96px,17vw,260px); font-weight:900; line-height:.8; letter-spacing:-.08em; font-variant-numeric:tabular-nums; }
     .loader-num em { font-style:normal; color:var(--olive); }
 
+    /* ---------- Topbar ---------- */
     .topbar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:83px; }
     .topbar::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--ink); transform-origin:left; }
     html.js .topbar::after { transform:scaleX(0); transition:transform 1.4s var(--ease-io) .15s; }
     html.js .topbar > * { opacity:0; transform:translateY(-8px); transition:opacity .8s var(--ease) .55s, transform .8s var(--ease) .55s; }
     body.ready .topbar::after, body.ready .topbar > * { transform:none; opacity:1; }
     .name { text-decoration:none; font-size:15px; font-weight:900; letter-spacing:-.5px; }
-    .eyebrow,.section-label,.project-number,.cover-label,.project-type,.footer,.hero-foot,.mb-index { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+    .eyebrow,.section-label,.project-number,.cover-label,.project-type,.project-year,.footer,.hero-foot,.mb-index,.project-tools { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
     .topbar-right { display:flex; align-items:center; gap:14px; margin-right:-1px; }
     .top-links { display:flex; align-items:center; gap:2px; }
     :root[data-theme="dark"] img.mb-ico { filter:brightness(0) invert(.93) sepia(.08); }
@@ -100,12 +127,15 @@
     .theme-btn .i-sun { display:none; }
     :root[data-theme="dark"] .theme-btn .i-sun { display:block; }
     :root[data-theme="dark"] .theme-btn .i-moon { display:none; }
-    ::view-transition-old(root), ::view-transition-new(root) { animation:none; mix-blend-mode:normal; }
+    html.vt-theme::view-transition-old(root), html.vt-theme::view-transition-new(root) { animation:none; mix-blend-mode:normal; }
+    html.vt-lang::view-transition-old(root), html.vt-lang::view-transition-new(root) { animation-duration:.42s; animation-timing-function:cubic-bezier(.4,0,.2,1); }
     .top-sep { width:1px; height:18px; background:var(--line); }
     .lang { display:flex; align-items:center; gap:6px; font:700 11px/1 var(--mono); letter-spacing:1px; color:var(--muted); }
     .lang button { appearance:none; border:0; padding:3px 1px 2px; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; color:var(--muted); font:inherit; letter-spacing:inherit; cursor:pointer; transition:color .3s, background-size .5s var(--ease); }
     .lang button[aria-pressed="true"] { color:var(--ink); background-size:100% .55em; }
+    a.is-off { cursor:default; }
 
+    /* ---------- Hero ---------- */
     .hero-track { position:relative; }
     .hero-sticky { position:sticky; top:0; height:100vh; height:100svh; overflow:hidden; }
     body.no-pin .hero-sticky { position:relative; height:auto; overflow:visible; }
@@ -123,8 +153,8 @@
     body.ready .intro-copy { opacity:1; transform:none; }
     .intro-copy > p { opacity:var(--ic,1); transform:translateY(calc((1 - var(--ic,1)) * -14px)); visibility:var(--icv,visible); }
     .byline { margin:0; max-width:270px; font:400 11px/1.6 var(--mono); letter-spacing:.3px; }
-    h3 .ul { text-decoration:none; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .5s var(--ease); }
-    .project-link:focus-visible h3 .ul { background-size:100% .55em; }
+    h3 .ul, .cta .ul { text-decoration:none; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .5s var(--ease); }
+    .project-link:focus-visible h3 .ul, .cta:focus-visible .ul { background-size:100% .55em; }
 
     .split { letter-spacing:0; }
     .ch { display:inline-block; overflow:hidden; padding-right:.1em; margin-right:-.185em; transition:transform .55s cubic-bezier(.3,1.8,.5,1), color .3s; }
@@ -133,11 +163,23 @@
     body.ready .title .ch-in { transform:none; transition:transform 1.15s var(--ease) calc(var(--i) * 42ms + .15s); }
     @media (hover:hover) { .title .ch:hover { transform:translateY(-.065em); color:var(--olive); } }
 
-    .section-label { position:relative; display:flex; justify-content:space-between; align-items:center; margin:0 0 26px; padding:12px 0; }
-    .section-label::before, .section-label::after { content:""; position:absolute; left:0; right:0; height:1px; background:var(--ink); transform:scaleX(var(--lp,1)); }
+    .section-label { position:relative; display:flex; justify-content:space-between; align-items:center; gap:16px; margin:0 0 26px; padding:12px 0; }
+    .section-label::before, .section-label::after { content:""; position:absolute; left:0; right:0; height:1px; background:var(--ink); transform:scaleX(var(--lp,1)); transform-origin:left; }
     .section-label::before { top:0; } .section-label::after { bottom:0; }
-    .section-label > * { opacity:var(--lt,1); }
+    .section-label > * { opacity:var(--lt,1); pointer-events:var(--ltp,auto); }
+    .section-label:focus-within > * { opacity:1; pointer-events:auto; }
     .section-label h2 { margin:0; font:inherit; }
+    .label-right { display:flex; align-items:center; gap:16px; }
+    .view-toggle { display:flex; align-items:center; gap:2px; margin:-6px 0; }
+    .view-btn { display:grid; place-items:center; width:30px; height:26px; padding:0; border:0; background:none; color:var(--muted); cursor:pointer; transition:color .3s, background-color .3s; }
+    .view-btn svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.4; }
+    .view-btn[aria-pressed="true"] { color:var(--paper); background:var(--ink); cursor:default; }
+    .view-btn:focus-visible { outline-offset:3px; }
+    html.js .section-label[data-draw]::before, html.js .section-label[data-draw]::after { transform:scaleX(0); transition:transform 1.3s var(--ease-io); }
+    html.js .section-label[data-draw]::after { transition-delay:.1s; }
+    html.js .section-label[data-draw] > * { opacity:0; transition:opacity .8s var(--ease) .45s; pointer-events:auto; }
+    html.js .section-label[data-draw].in::before, html.js .section-label[data-draw].in::after { transform:none; }
+    html.js .section-label[data-draw].in > * { opacity:1; }
 
     .hero-foot { position:absolute; left:0; right:0; bottom:clamp(18px,4.2vh,44px); opacity:var(--cue,1); color:var(--muted); font-size:10px; }
     body.no-pin .hero-foot { display:none; }
@@ -150,43 +192,76 @@
     .cue-line::after { content:""; position:absolute; left:0; top:0; width:1px; height:100%; background:var(--ink); transform:translateY(-100%); animation:cueFlow 2.8s cubic-bezier(.65,0,.35,1) infinite; }
     @keyframes cueFlow { 0% { transform:translateY(-100%); } 55% { transform:translateY(0); } 100% { transform:translateY(100%); } }
 
+    /* ---------- Projects: grid view ---------- */
     #projects { position:relative; z-index:1; will-change:transform; }
     .project-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:36px; row-gap:44px; }
-    .project { min-width:0; transition:opacity .5s var(--ease), filter .5s var(--ease); }
+    .project { position:relative; min-width:0; transition:opacity .5s var(--ease), filter .5s var(--ease); }
     .project:nth-child(even) { --cd:.12s; }
     .project-link { display:block; height:100%; text-decoration:none; }
-    .cover { position:relative; isolation:isolate; overflow:hidden; aspect-ratio:1.68; border:1px solid var(--ink); }
-    html.js .cover { clip-path:inset(100% 0 0 0); transition:clip-path 1.25s var(--ease-io) var(--cd,0s); }
-    html.js .cover.in { clip-path:inset(0 0 0 0); }
-    .art { position:absolute; width:100%; height:100%; inset:0; transform:translate3d(var(--tx,0px),var(--ty,0px),0) scale(var(--sc,1)); transition:transform .9s var(--ease); }
+    .cover { position:relative; isolation:isolate; overflow:hidden; aspect-ratio:1625 / 968; border:1px solid var(--ink); background:var(--rim); --tdel:var(--cd,0s); }
+    .cover-in { position:absolute; inset:0; overflow:hidden; background:#0d0d0c; }
+    .cover picture { position:absolute; inset:0; display:block; }
+    .art { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; transform:translate3d(var(--tx,0px),var(--ty,0px),0) scale(var(--sc,1)); transition:transform .9s var(--ease); }
     html.js .cover:not(.in) .art { --sc:1.22; }
-    .cover-label { position:absolute; z-index:2; top:20px; left:22px; right:22px; display:flex; justify-content:space-between; gap:12px; font-size:10px; letter-spacing:.8px; }
-    html.js .cover-label { opacity:0; transition:opacity .8s var(--ease) calc(var(--cd,0s) + .7s); }
-    html.js .cover.in .cover-label { opacity:1; }
+    html.js .cover.in .art { transition:transform 1.6s var(--ease); }
+    html.js .cover.in.done .art { transition:transform .9s var(--ease); }
+    .cover-label { position:absolute; z-index:2; top:20px; left:22px; right:22px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; font-size:10px; letter-spacing:.8px; }
+    .cover-label span, .cover-caption { padding:5px 7px 4px; background:var(--paper); color:var(--ink); line-height:1.25; }
     .cover-label span:last-child { text-align:right; }
+    .cover-caption { position:absolute; z-index:2; left:22px; bottom:18px; max-width:calc(100% - 44px); font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+    html.js .cover-label, html.js .cover-caption { opacity:0; transition:opacity .8s var(--ease) calc(var(--cd,0s) + .9s); }
+    html.js .cover.in .cover-label, html.js .cover.in .cover-caption { opacity:1; }
     .project-meta { display:flex; align-items:center; gap:12px; margin:19px 0 10px; }
     .project-number { display:inline-grid; place-items:center; width:25px; height:23px; border:1px solid var(--ink); font-size:10px; flex-shrink:0; transition:background .3s, color .3s; }
     .project-type { color:var(--muted); font-size:10px; letter-spacing:.5px; line-height:1.5; }
+    .project-year { margin-left:auto; padding-left:12px; flex-shrink:0; font-size:10px; letter-spacing:.5px; font-variant-numeric:tabular-nums; }
     .project-heading { display:flex; align-items:start; justify-content:space-between; gap:20px; }
     h3 { margin:0; font-size:clamp(27px,2.7vw,39px); line-height:1.04; font-weight:900; letter-spacing:-1.6px; }
-    .arrow { position:relative; display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; overflow:hidden; border:1px solid var(--ink); border-radius:50%; transition:background .3s; }
+    .arrow { position:relative; display:grid; place-items:center; flex-shrink:0; width:38px; height:38px; overflow:hidden; border:1px solid var(--ink); border-radius:50%; transition:background .3s, color .3s, border-color .3s; }
     .arrow svg { position:absolute; width:19px; height:19px; transition:transform .55s var(--ease); }
     .arrow .a2 { transform:translate(-160%,160%); }
-    .description { margin:15px 0 0; max-width:600px; color:var(--muted); font-size:14px; line-height:1.7; }
+    .description { margin:15px 0 0; max-width:600px; color:var(--muted); font-size:14px; line-height:1.7; text-wrap:pretty; }
+    .project-tools { margin:14px 0 0; color:var(--ink); font-size:10px; letter-spacing:.6px; }
     .project-link:focus-visible .arrow { background:var(--pop); color:#181818; border-color:#181818; }
-
     html.js [data-reveal] { opacity:0; transform:translateY(26px); transition:opacity 1s var(--ease), transform 1s var(--ease); transition-delay:calc(var(--cd,0s) + var(--d,0s)); }
     html.js [data-reveal].in { opacity:1; transform:none; }
 
-    .cover-photo { aspect-ratio:auto; background:#050505; color:#f6f4ee; }
-    .cover-photo img.art { position:relative; inset:auto; display:block; width:100%; height:auto; }
-    .cover-photo .cover-label { align-items:flex-start; }
-    .cover-photo .cover-label span, .cover-photo .cover-caption { padding:5px 7px 4px; background:var(--paper); color:var(--ink); line-height:1.25; }
-    .cover-photo .cover-caption { right:auto; max-width:calc(100% - 44px); }
-    .cover-caption { position:absolute; z-index:2; left:22px; right:22px; bottom:18px; font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:#f6f4ee; }
-    html.js .cover-caption { opacity:0; transition:opacity .8s var(--ease) calc(var(--cd,0s) + .8s); }
-    html.js .cover.in .cover-caption { opacity:1; }
+    /* ---------- Projects: list view ---------- */
+    html[data-view="list"] .project-grid { display:block; }
+    html[data-view="list"] .project::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--ink); transform-origin:left; }
+    html.js[data-view="list"] .project::after { transform:scaleX(0); transition:transform 1.25s var(--ease-io); }
+    html.js[data-view="list"] .project.in::after { transform:none; }
+    html[data-view="list"] .project-link { display:grid; grid-template-columns:52px minmax(0,1fr) minmax(0,300px) 120px 38px; grid-template-areas:"num title type year arrow"; align-items:center; column-gap:24px; padding:26px 0 25px; }
+    html[data-view="list"] .project-meta, html[data-view="list"] .project-heading { display:contents; }
+    html[data-view="list"] .project .project-number { grid-area:num; }
+    html[data-view="list"] .project-type { grid-area:type; }
+    html[data-view="list"] .project-year { grid-area:year; justify-self:end; margin:0; padding:0; }
+    html[data-view="list"] .project h3 { grid-area:title; font-size:clamp(30px,4.2vw,62px); line-height:1; letter-spacing:-.05em; }
+    html[data-view="list"] .project .arrow { grid-area:arrow; }
+    html[data-view="list"] .cover, html[data-view="list"] .description, html[data-view="list"] .project-tools,
+    html[data-view="list"] .cover-label, html[data-view="list"] .cover-caption { display:none; }
+    html.js[data-view="list"] .project .project-number, html.js[data-view="list"] .project .project-type, html.js[data-view="list"] .project .project-year,
+    html.js[data-view="list"] .project h3, html.js[data-view="list"] .project .arrow {
+      opacity:0; transform:translateY(16px);
+      transition:opacity .9s var(--ease) var(--rd,0s), transform .9s var(--ease) var(--rd,0s), background .3s, color .3s, border-color .3s;
+    }
+    html.js[data-view="list"] .project h3 { --rd:.06s; }
+    html.js[data-view="list"] .project .project-type { --rd:.14s; }
+    html.js[data-view="list"] .project .project-year { --rd:.2s; }
+    html.js[data-view="list"] .project .arrow { --rd:.26s; }
+    html.js[data-view="list"] .project.in .project-number, html.js[data-view="list"] .project.in .project-type, html.js[data-view="list"] .project.in .project-year,
+    html.js[data-view="list"] .project.in h3, html.js[data-view="list"] .project.in .arrow { opacity:1; transform:none; }
+    html[data-view="list"] .project-link:focus-visible { outline-offset:2px; }
 
+    .preview { position:fixed; top:0; left:0; z-index:44; width:clamp(240px,23vw,360px); aspect-ratio:1625 / 968; pointer-events:none; opacity:0; will-change:transform, opacity; }
+    .preview-in { position:relative; width:100%; height:100%; }
+    .pv-slide { position:absolute; inset:0; overflow:hidden; border:1px solid var(--ink); background:var(--rim); --tdur:.72s; }
+    .pv-slide .tear-in { position:absolute; inset:0; background:#0d0d0c; }
+    .pv-slide picture, .pv-slide img { display:block; width:100%; height:100%; object-fit:cover; }
+
+    .cursor { position:fixed; top:0; left:0; z-index:60; display:grid; place-items:center; width:98px; height:98px; margin:-49px 0 0 -49px; border:1px solid var(--ink); border-radius:50%; background:var(--pop); color:#181818; font:700 11px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; pointer-events:none; transform:scale(0); will-change:transform; }
+
+    /* ---------- Marquee ---------- */
     .marquee { margin-top:110px; overflow:hidden; border-block:1px solid var(--ink); padding:20px 0 22px; }
     .marquee-track { display:flex; width:max-content; will-change:transform; }
     .mq-group { display:flex; align-items:center; flex-shrink:0; font-size:clamp(54px,9vw,150px); }
@@ -194,17 +269,49 @@
     .mq-item.outline { color:transparent; -webkit-text-stroke:1.5px var(--ink); }
     .mq-sep { display:inline-block; flex-shrink:0; width:.17em; height:.17em; margin:0 .1em; background:var(--olive); }
 
+    /* ---------- About ---------- */
+    .about { padding-top:150px; }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:36px; margin-top:64px; }
+    .about-lead { grid-column:2; margin:0; max-width:17em; font-size:clamp(28px,3.4vw,50px); font-weight:700; line-height:1.06; letter-spacing:-.045em; text-wrap:balance; }
+    .steps { list-style:none; display:grid; grid-template-columns:repeat(3,1fr); column-gap:36px; margin:110px 0 0; padding:0; }
+    .step { position:relative; padding-top:20px; }
+    .step::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:var(--ink); transform-origin:left; }
+    html.js .step::before { transform:scaleX(0); transition:transform 1.2s var(--ease-io) var(--sd,0s); }
+    html.js .steps.in .step::before { transform:none; }
+    .step:nth-child(2) { --sd:.12s; } .step:nth-child(3) { --sd:.24s; }
+    .step h3 { margin:22px 0 10px; font-size:clamp(22px,1.9vw,27px); letter-spacing:-.04em; }
+    .step p { margin:0; max-width:38ch; color:var(--muted); font-size:14px; line-height:1.7; text-wrap:pretty; }
+
+    /* ---------- Contact ---------- */
+    .contact { padding-top:150px; }
+    .contact-title { margin:60px 0 0; max-width:8.4em; font-size:clamp(46px,7.6vw,128px); font-weight:900; line-height:.92; letter-spacing:-.07em; text-wrap:balance; }
+    .contact-row { display:grid; grid-template-columns:1fr 1fr; align-items:center; column-gap:36px; row-gap:28px; margin-top:64px; padding-top:28px; border-top:1px solid var(--line); }
+    .contact-links { grid-column:1; grid-row:1; }
+    .cta { grid-column:2; grid-row:1; justify-self:start; display:inline-flex; align-items:center; gap:22px; text-decoration:none; font-size:clamp(22px,2.3vw,32px); font-weight:700; letter-spacing:-.035em; line-height:1.1; }
+    .cta .arrow { width:58px; height:58px; }
+    .cta .arrow svg { width:24px; height:24px; }
+    .cta:focus-visible .arrow { background:var(--pop); color:#181818; border-color:#181818; }
+    .contact-links { display:flex; align-items:center; flex-wrap:wrap; gap:8px 26px; }
+    .clink { appearance:none; border:0; padding:4px 1px 3px; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; color:var(--muted); font:700 11px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; text-decoration:none; cursor:pointer; transition:color .3s, background-size .5s var(--ease); }
+    .clink:focus-visible { color:var(--ink); background-size:100% .55em; }
+    .clink.is-off, .clink[hidden] { display:none; }
+
+    /* ---------- Footer ---------- */
+    .footer-wrap { margin-top:130px; border-top:1px solid var(--ink); }
     .footer { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:23px 0 28px; font-size:10px; line-height:1.7; letter-spacing:.4px; }
     .footer a { text-decoration:none; padding:5px 0; }
     .footer a:focus-visible { text-decoration:underline; text-underline-offset:4px; }
+    .foot-year { color:var(--muted); margin-left:10px; }
 
+    /* ---------- Minibar ---------- */
     .minibar { position:fixed; top:0; left:0; right:0; z-index:50; background:var(--bar); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--ink); transform:translateY(-102%); visibility:hidden; transition:transform .7s var(--ease), visibility 0s linear .7s; }
     .minibar.show { transform:none; visibility:visible; transition:transform .7s var(--ease); }
     .minibar-in { display:flex; align-items:center; justify-content:space-between; gap:20px; height:54px; }
     .mb-links { display:flex; align-items:center; gap:2px; margin-right:-9px; }
     .mb-link { position:relative; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; color:var(--ink); text-decoration:none; }
     .mb-link::before { content:""; position:absolute; inset:0; border-radius:50%; background:var(--paper); border:1px solid var(--ink); transform:scale(0); transition:transform .5s var(--ease); }
-    .mb-link .mb-ico { position:relative; display:block; width:18px; height:18px; transition:transform .5s var(--ease); }
+    .mb-link .mb-ico { position:relative; display:block; width:18px; height:18px; transition:transform .5s var(--ease), opacity .3s; }
+    .mb-link.is-off .mb-ico { opacity:.4; }
     .mb-link::after { content:attr(data-label); position:absolute; top:calc(100% + 12px); left:50%; padding:4px 6px 3px; background:var(--ink); color:var(--paper); font:700 9px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; opacity:0; transform:translate(-50%,-4px); pointer-events:none; transition:opacity .3s var(--ease), transform .4s var(--ease); }
     .mb-link:focus-visible::before { transform:scale(1); }
     .mb-link:focus-visible::after { opacity:1; transform:translate(-50%,0); }
@@ -214,44 +321,66 @@
     .mb-left .mb-sep { margin:0 14px 0 8px; }
     .mb-index { display:flex; align-items:center; gap:10px; font-size:10px; }
     .mb-k { color:var(--muted); }
+    .mb-index.sec .mb-k { color:var(--ink); }
+    .mb-index.sec .mb-num, .mb-index.sec .mb-of, .mb-index.sec .mb-title { display:none; }
     .mb-num { display:inline-grid; place-items:center; min-width:25px; height:21px; padding:0 4px; background:var(--ink); color:var(--paper); font-variant-numeric:tabular-nums; }
     .mb-title { min-width:22ch; color:var(--muted); }
     .mb-progress { position:absolute; left:0; bottom:-1px; width:100%; height:2px; background:var(--ink); transform:scaleX(var(--sp,0)); transform-origin:left; }
 
-    .cursor { position:fixed; top:0; left:0; z-index:60; display:grid; place-items:center; width:98px; height:98px; margin:-49px 0 0 -49px; border:1px solid var(--ink); border-radius:50%; background:var(--pop); color:#181818; font:700 11px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; pointer-events:none; transform:scale(0); will-change:transform; }
+    /* ---------- Toast ---------- */
+    .toast { position:fixed; left:50%; bottom:28px; z-index:95; max-width:calc(100% - 36px); padding:12px 16px 11px; background:var(--ink); color:var(--paper); font:700 11px/1.4 var(--mono); letter-spacing:.8px; text-transform:uppercase; opacity:0; transform:translate(-50%,24px); pointer-events:none; transition:opacity .4s var(--ease), transform .6s var(--ease); }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
 
+    /* ---------- Hover (pointer devices only) ---------- */
     @media (hover:hover) {
-      .theme-btn:hover::before, .mb-link:hover::before { transform:scale(1); }
+      .theme-btn:hover::before, .mb-link:not(.is-off):hover::before { transform:scale(1); }
       .theme-btn:hover svg { transform:rotate(-25deg); }
-      .mb-link:hover .mb-ico { transform:translateY(-1px) scale(1.08); }
+      .mb-link:not(.is-off):hover .mb-ico { transform:translateY(-1px) scale(1.08); }
       .mb-link:hover::after { opacity:1; transform:translate(-50%,0); }
-      .lang button:hover, .cue:hover, .mq-item.outline:hover { color:var(--ink); }
+      .lang button:hover, .cue:hover, .mq-item.outline:hover, .clink:hover, .view-btn:hover { color:var(--ink); }
+      .view-btn[aria-pressed="true"]:hover { color:var(--paper); }
+      .clink:hover { background-size:100% .55em; }
       .mq-item:hover { color:var(--olive); }
       .footer a:hover { text-decoration:underline; text-underline-offset:4px; }
       .project-grid:has(.project-link:hover) .project:not(:hover) { opacity:.42; filter:grayscale(.85); }
+      html[data-view="list"] .project-grid:has(.project-link:hover) .project:not(:hover) { opacity:.28; filter:none; }
       .project-link:hover .art { --sc:1.05; }
-      .project-link:hover h3 .ul { background-size:100% .55em; }
-      .project-link:hover .arrow { background:var(--pop); color:#181818; border-color:#181818; }
-      .project-link:hover .arrow .a1 { transform:translate(160%,-160%); }
-      .project-link:hover .arrow .a2 { transform:none; }
+      .project-link:hover h3 .ul, .cta:hover .ul { background-size:100% .55em; }
+      .project-link:hover .arrow, .cta:hover .arrow { background:var(--pop); color:#181818; border-color:#181818; }
+      .project-link:hover .arrow .a1, .cta:hover .arrow .a1 { transform:translate(160%,-160%); }
+      .project-link:hover .arrow .a2, .cta:hover .arrow .a2 { transform:none; }
       .project-link:hover .project-number { background:var(--ink); color:var(--paper); }
     }
     @media (hover:hover) and (pointer:fine) { .cover { cursor:none; } }
+    @media not all and (hover:hover) { .preview { display:none; } }
+    @media (hover:none) and (min-width:681px) {
+      html[data-view="list"] .project-link { grid-template-columns:52px minmax(0,1fr) minmax(0,240px) 96px 168px; grid-template-areas:"num title type year thumb"; }
+      html[data-view="list"] .cover { display:block; grid-area:thumb; }
+      html[data-view="list"] .project .arrow { display:none; }
+    }
 
+    /* ---------- Responsive ---------- */
     @media (min-width:1600px) { .page { width:min(1440px,100% - 128px); } h1 { font-size:min(145px, calc((min(1440px, 100vw - 128px) - 320px) / 7.3)); } }
     @media (max-width:1000px) {
       .page { width:calc(100% - 56px); }
-      .loader { padding-inline:28px; }
+      .loader-sheet { padding-inline:28px; }
       .intro { grid-template-columns:1fr 230px; gap:24px; }
       h1 { font-size:calc((100vw - 310px) / 7.3); }
-      .project-grid { column-gap:26px; }
+      .project-grid, .about-grid { column-gap:26px; }
+      .steps { column-gap:26px; }
       h3 { font-size:29px; }
       .cover-label { top:14px; left:16px; right:16px; font-size:8px; }
       .cover-caption { left:16px; bottom:13px; font-size:8px; }
+      html[data-view="list"] .project-link { grid-template-columns:44px minmax(0,1fr) 110px 38px; grid-template-areas:"num title year arrow"; column-gap:18px; }
+      html[data-view="list"] .project-type { display:none; }
+      .about-lead { grid-column:1 / -1; max-width:20em; }
+    }
+    @media (hover:none) and (min-width:681px) and (max-width:1000px) {
+      html[data-view="list"] .project-link { grid-template-columns:44px minmax(0,1fr) 96px 150px; grid-template-areas:"num title year thumb"; }
     }
     @media (max-width:680px) {
       .page { width:calc(100% - 36px); }
-      .loader { padding-inline:18px; }
+      .loader-sheet { padding-inline:18px; }
       .loader-top { min-height:65px; }
       .loader-name { font-size:13px; }
       .loader-note { font-size:8px; }
@@ -268,6 +397,7 @@
       .byline { max-width:none; line-height:1.35; white-space:nowrap; }
       .byline br { display:none; }
       .section-label { font-size:10px; margin-bottom:20px; }
+      .label-right { gap:10px; }
       .project-grid { grid-template-columns:1fr; row-gap:33px; }
       .project:nth-child(even) { --cd:0s; }
       .cover-label { top:16px; left:18px; right:18px; font-size:9px; }
@@ -275,8 +405,24 @@
       .project-meta { margin-top:16px; }
       h3 { font-size:32px; letter-spacing:-1.4px; }
       .description { font-size:14px; line-height:1.65; margin-top:13px; }
+      html[data-view="list"] .project-link { grid-template-columns:30px minmax(0,1fr) 38%; grid-template-areas:"num title thumb" "num year thumb"; column-gap:14px; row-gap:10px; align-items:start; padding:16px 0 17px; }
+      html[data-view="list"] .cover { display:block; grid-area:thumb; }
+      html[data-view="list"] .project .arrow, html[data-view="list"] .project-type { display:none; }
+      html[data-view="list"] .project-year { justify-self:start; align-self:end; }
+      html[data-view="list"] .project h3 { font-size:clamp(22px,6.6vw,30px); letter-spacing:-.04em; line-height:1.02; }
       .marquee { margin-top:72px; padding:14px 0 16px; }
+      .about, .contact { padding-top:96px; }
+      .about-grid { margin-top:40px; }
+      .about-lead { font-size:clamp(26px,7.4vw,34px); }
+      .steps { grid-template-columns:1fr; row-gap:40px; margin-top:64px; }
+      .step h3 { margin-top:18px; }
+      .contact-title { margin-top:40px; font-size:clamp(40px,12.4vw,64px); }
+      .contact-row { margin-top:44px; grid-template-columns:1fr; }
+      .cta { grid-column:1; grid-row:1; }
+      .contact-links { grid-row:2; }
+      .footer-wrap { margin-top:96px; }
       .mb-title, .mb-k { display:none; }
+      .mb-index.sec .mb-k { display:inline; }
       .minibar-in { height:48px; }
       .footer { font-size:9px; align-items:start; }
       .footer a { white-space:nowrap; }
@@ -284,9 +430,13 @@
     @media (prefers-reduced-motion:reduce) {
       html { scroll-behavior:auto; }
       *,*::before,*::after { transition:none !important; animation:none !important; }
-      html.js [data-reveal], html.js .cover, html.js .ch-in, html.js .intro-copy, html.js .topbar > *, html.js .topbar::after,
-      html.js .cover-label, html.js .cover-caption, html.js .hero-foot-in { opacity:1 !important; transform:none !important; clip-path:none !important; }
+      html.js [data-reveal], html.js .ch-in, html.js .intro-copy, html.js .topbar > *, html.js .topbar::after,
+      html.js .cover-label, html.js .cover-caption, html.js .hero-foot-in, html.js[data-view="list"] .project-link > *,
+      html.js[data-view="list"] .project-meta > *, html.js[data-view="list"] .project-heading > *, html.js .section-label[data-draw] > * { opacity:1 !important; transform:none !important; }
+      html.js .tear, html.js .tear > .tear-in { clip-path:none !important; }
+      html.js .section-label[data-draw]::before, html.js .section-label[data-draw]::after, html.js .step::before, html.js[data-view="list"] .project::after { transform:none !important; }
       html.js .cover .art { --sc:1 !important; }
+      .preview, .cursor { display:none !important; }
     }
   </style>
 </head>
@@ -294,37 +444,36 @@
   <a class="skip" href="#projects" data-i18n="skip">Skip to projects</a>
 
   <div class="loader" aria-hidden="true">
-    <div class="loader-top"><span class="loader-name">J. BARRERA.</span><span class="loader-note" data-i18n="ldNote">Data Science</span></div>
-    <div class="loader-foot"><div class="loader-num"><span id="ld-num">000</span><em>%</em></div><span data-i18n="ldFoot">Loading<br>independent data projects</span></div>
+    <div class="loader-rim"></div>
+    <div class="loader-sheet">
+      <div class="loader-top"><span class="loader-name">J. BARRERA.</span><span class="loader-note" data-i18n="ldNote">Data Science</span></div>
+      <div class="loader-foot"><div class="loader-num"><span id="ld-num">000</span><em>%</em></div><span data-i18n="ldFoot">Loading<br>independent data projects</span></div>
+    </div>
   </div>
 
   <nav class="minibar" aria-label="Quick navigation" data-i18n-attr="aria-label:navAria">
     <div class="page minibar-in">
       <div class="mb-left">
-          <a class="mb-link" href="#top" data-label="Home" aria-label="Back to the cover" data-i18n-attr="data-label:home;aria-label:homeAria">
+        <a class="mb-link" href="#top" data-label="Home" aria-label="Back to the cover" data-i18n-attr="data-label:home;aria-label:homeAria">
           <svg class="mb-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.23 1.6a1.2 1.2 0 0 1 1.54 0l10.3 8.62c.86.72.35 2.12-.77 2.12H21v9.46A2.2 2.2 0 0 1 18.8 24h-3.6a1 1 0 0 1-1-1v-5.4a1.2 1.2 0 0 0-1.2-1.2h-2a1.2 1.2 0 0 0-1.2 1.2V23a1 1 0 0 1-1 1H5.2A2.2 2.2 0 0 1 3 21.8v-9.46H1.7c-1.12 0-1.63-1.4-.77-2.12z"/></svg>
         </a>
         <span class="mb-sep" aria-hidden="true"></span>
-      <div class="mb-index"><span class="mb-k" data-i18n="index">Index</span><span class="mb-num" id="mb-num">01</span><span>/ 04</span><span class="mb-title" id="mb-title" data-i18n="p1.title">Overdue Sessions</span></div>
+        <div class="mb-index"><span class="mb-k">Index</span><span class="mb-num" id="mb-num">01</span><span class="mb-of">/ 04</span><span class="mb-title" id="mb-title" data-i18n="p1.title">Overdue Sessions</span></div>
       </div>
       <div class="mb-links">
         <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
         <span class="mb-sep" aria-hidden="true"></span>
-        <a class="mb-link" href="https://github.com/barrierj93" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria">
-          <img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18">
-        </a>
-        <a class="mb-link" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria">
-          <img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18">
-        </a>
-        <a class="mb-link" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria">
-          <img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18">
-        </a>
+        <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
+        <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
+        <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
       </div>
     </div>
     <i class="mb-progress" aria-hidden="true"></i>
   </nav>
 
-  <div class="cursor" aria-hidden="true" data-i18n="view">View ↗</div>
+  <div class="cursor" aria-hidden="true">View ↗</div>
+  <div class="preview" aria-hidden="true"><div class="preview-in"></div></div>
+  <div class="toast" role="status" aria-live="polite"></div>
 
   <div class="hero-track" id="top">
     <div class="hero-sticky">
@@ -333,9 +482,9 @@
           <a class="name" href="#top">J. BARRERA.</a>
           <div class="topbar-right">
             <div class="top-links">
-              <a class="mb-link" data-sync="GitHub" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
-              <a class="mb-link" data-sync="LinkedIn" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
-              <a class="mb-link" data-sync="Email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
+              <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
+              <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
+              <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
             </div>
             <span class="top-sep" aria-hidden="true"></span>
             <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:langAria"><button type="button" data-lang="es" aria-pressed="false">ES</button><span aria-hidden="true">/</span><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
@@ -352,7 +501,16 @@
               <p class="byline" data-i18n="byline">A collection of <br>independent projects.</p>
             </div>
           </section>
-          <div class="section-label"><h2 id="projects-heading" data-i18n="label">Index</h2><span id="label-count">01 — 04</span></div>
+          <div class="section-label">
+            <h2 id="projects-heading" data-i18n="label">Index</h2>
+            <div class="label-right">
+              <div class="view-toggle" role="group" aria-label="Layout" data-i18n-attr="aria-label:layoutAria">
+                <button class="view-btn" type="button" data-view="grid" aria-pressed="true" aria-label="Grid view" data-i18n-attr="aria-label:gridView"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.7" y="1.7" width="5" height="5"/><rect x="9.3" y="1.7" width="5" height="5"/><rect x="1.7" y="9.3" width="5" height="5"/><rect x="9.3" y="9.3" width="5" height="5"/></svg></button>
+                <button class="view-btn" type="button" data-view="list" aria-pressed="false" aria-label="List view" data-i18n-attr="aria-label:listView"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 3.5h13M1.5 8h13M1.5 12.5h13"/></svg></button>
+              </div>
+              <span id="label-count">01 — 04</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero-foot page">
@@ -366,92 +524,161 @@
     </div>
   </div>
 
-  <main class="page">
-    <section id="projects" aria-labelledby="projects-heading">
+  <main>
+    <section class="page" id="projects" aria-labelledby="projects-heading" data-section>
       <div class="project-grid">
 
         <article class="project" id="p1" data-title="Overdue Sessions" data-i18n-attr="data-title:p1.title">
           <a class="project-link" href="https://barrierj93.github.io/sesiones-EDA/" target="_blank" rel="noopener noreferrer" aria-label="Overdue Sessions — open project in a new tab" data-i18n-attr="aria-label:p1.aria">
-            <div class="cover cover-photo" aria-hidden="true">
-              <img class="art" src="./img/sesiones-cover.jpg" alt="" width="1920" height="941" loading="lazy" decoding="async">
+            <div class="cover tear" aria-hidden="true">
+              <div class="cover-in tear-in">
+                <picture>
+                  <source type="image/webp" srcset="./img/sesiones-cover-960.webp 960w, ./img/sesiones-cover.webp 1625w" sizes="(max-width: 680px) 100vw, 50vw">
+                  <img class="art" src="./img/sesiones-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async" onerror="jbImg(this)">
+                </picture>
+              </div>
             </div>
-            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">01</span><span class="project-type" data-i18n="p1.type">Exploratory Data Analysis | Data Visualization</span></div>
+            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">01</span><span class="project-type" data-i18n="p1.type">Exploratory Data Analysis | Data Visualization</span><span class="project-year">2026</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
               <h3><span class="ul" data-i18n="p1.title">Overdue Sessions</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
             <p class="description" data-reveal style="--d:.35s" data-i18n="p1.desc">An exploratory data analysis of the state of mental health care access in Spain. The project examines waiting times, coverage gaps and regional disparities in public psychological services — combining open government data with web-scraped sources to surface a largely invisible public health issue.</p>
+            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p1.tools">Built with D3.js and Three.js</p>
           </a>
         </article>
 
         <article class="project" id="p2" data-title="CTI Report" data-i18n-attr="data-title:p2.title">
-          <a class="project-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="CTI Report — open project in a new tab" data-i18n-attr="aria-label:p2.aria">
-            <div class="cover cover-photo" aria-hidden="true">
-              <div class="cover-label"><span data-i18n="p2.l1">Cyber threat intelligence</span><span data-i18n="p2.l2">Follow the signal ↗</span></div>
-              <img class="art" src="./img/cyber-cover.jpg" alt="" width="1624" height="968" loading="lazy" decoding="async">
-              <span class="cover-caption" data-i18n="p2.cap">Campaigns. Vectors. Sectors. Connections.</span>
+          <a class="project-link" href="https://barrierj93.github.io/threat-intel-report/" target="_blank" rel="noopener noreferrer" aria-label="CTI Report — open project in a new tab" data-i18n-attr="aria-label:p2.aria">
+            <div class="cover tear" aria-hidden="true">
+              <div class="cover-in tear-in">
+                <picture>
+                  <source type="image/webp" srcset="./img/cyber-cover-960.webp 960w, ./img/cyber-cover.webp 1624w" sizes="(max-width: 680px) 100vw, 50vw">
+                  <img class="art" src="./img/cyber-cover.jpg" alt="" width="1624" height="968" loading="lazy" decoding="async" onerror="jbImg(this)">
+                </picture>
+                <div class="cover-label"><span data-i18n="p2.l1">Cyber threat intelligence</span><span data-i18n="p2.l2">Follow the signal ↗</span></div>
+                <span class="cover-caption" data-i18n="p2.cap">Campaigns. Vectors. Sectors. Connections.</span>
+              </div>
             </div>
-            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">02</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span></div>
+            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">02</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span><span class="project-year">2026</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
               <h3><span class="ul" data-i18n="p2.title">CTI Report</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
             <p class="description" data-reveal style="--d:.35s" data-i18n="p2.desc">A threat intelligence analysis tracking cyberattack campaigns. The project maps attack vectors, targeted sectors and geographic patterns across a multi-year dataset, producing an interactive dashboard.</p>
+            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p2.tools">Built with D3.js</p>
           </a>
         </article>
 
         <article class="project" id="p3" data-title="Bosman Ruling" data-i18n-attr="data-title:p3.title">
           <a class="project-link" href="https://barrierj93.github.io/EDA_Bosman_Ruling/" target="_blank" rel="noopener noreferrer" aria-label="Bosman Ruling — open project in a new tab" data-i18n-attr="aria-label:p3.aria">
-            <div class="cover cover-photo" aria-hidden="true">
-              <img class="art" src="./img/bosman-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async">
+            <div class="cover tear" aria-hidden="true">
+              <div class="cover-in tear-in">
+                <picture>
+                  <source type="image/webp" srcset="./img/bosman-cover-960.webp 960w, ./img/bosman-cover.webp 1626w" sizes="(max-width: 680px) 100vw, 50vw">
+                  <img class="art" src="./img/bosman-cover.jpg" alt="" width="1626" height="967" loading="lazy" decoding="async" onerror="jbImg(this)">
+                </picture>
+              </div>
             </div>
-            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">03</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span></div>
+            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">03</span><span class="project-type" data-i18n="type">Data Analysis &amp; Visualization</span><span class="project-year">2026</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
               <h3><span class="ul" data-i18n="p3.title">Bosman Ruling</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p3.desc">An analytical deep-dive into the long-term impact of the 1995 Bosman ruling on professional football. The project tracks how freedom of movement transformed player transfer markets, squad nationality composition, and wage structures across Europe's top leagues — using historical data spanning three decades.</p>
+            <p class="description" data-reveal style="--d:.35s" data-i18n="p3.desc">An analytical deep-dive into the long-term impact of the 1995 Bosman ruling on professional football. The project tracks how freedom of movement transformed player transfer markets, squad nationality composition, and wage structures across Europe’s top leagues — using historical data spanning three decades.</p>
+            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p3.tools">Built with JavaScript and Canvas</p>
           </a>
         </article>
 
         <article class="project" id="p4" data-title="Global CO₂ Emissions" data-i18n-attr="data-title:p4.title">
-          <a class="project-link" href="https://public.tableau.com/app/profile/juli.n.barrera.antoniolli/viz/CO2Dashboard_17261787616320/Dash_dark3" target="_blank" rel="noopener noreferrer" aria-label="Global CO2 Emissions — open project in a new tab" data-i18n-attr="aria-label:p4.aria">
-            <div class="cover cover-photo" aria-hidden="true">
-              <img class="art" src="./img/co2-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async">
+          <a class="project-link" href="https://public.tableau.com/app/profile/juli.n.barrera.antoniolli/viz/CO2Dashboard_17261787616320/Dash_dark3" target="_blank" rel="noopener noreferrer" aria-label="Global CO₂ Emissions — open project in a new tab" data-i18n-attr="aria-label:p4.aria">
+            <div class="cover tear" aria-hidden="true">
+              <div class="cover-in tear-in">
+                <picture>
+                  <source type="image/webp" srcset="./img/co2-cover-960.webp 960w, ./img/co2-cover.webp 1625w" sizes="(max-width: 680px) 100vw, 50vw">
+                  <img class="art" src="./img/co2-cover.jpg" alt="" width="1625" height="968" loading="lazy" decoding="async" onerror="jbImg(this)">
+                </picture>
+              </div>
             </div>
-            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">04</span><span class="project-type" data-i18n="p4.type">Tableau | Data Analysis &amp; Visualization</span></div>
+            <div class="project-meta" data-reveal style="--d:.15s"><span class="project-number">04</span><span class="project-type" data-i18n="p4.type">Tableau | Data Analysis &amp; Visualization</span><span class="project-year">2024</span></div>
             <div class="project-heading" data-reveal style="--d:.25s">
               <h3><span class="ul" data-i18n="p4.title">Global CO₂ Emissions</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p4.desc">An interactive Tableau dashboard tracking global CO2 emissions across countries, sectors and time. Built on publicly available climate datasets processed with Python, it allows users to explore emission trends, per-capita comparisons and sectoral breakdowns — making complex climate data accessible and actionable.</p>
+            <p class="description" data-reveal style="--d:.35s" data-i18n="p4.desc">An interactive Tableau dashboard tracking global CO₂ emissions across countries, sectors and time. Built on publicly available climate datasets processed with Python, it allows users to explore emission trends, per-capita comparisons and sectoral breakdowns — making complex climate data accessible and actionable.</p>
+            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p4.tools">Built with Tableau and Python</p>
           </a>
         </article>
 
       </div>
     </section>
-  </main>
 
-  <div class="marquee" aria-label="Skills" data-i18n-attr="aria-label:mqAria">
-    <div class="marquee-track">
-      <div class="mq-group">
-        <span class="mq-item" data-i18n="mq1">Data Science</span><span class="mq-sep" aria-hidden="true"></span>
-        <span class="mq-item outline" data-i18n="mq2">UX/UI</span><span class="mq-sep" aria-hidden="true"></span>
-        <span class="mq-item" data-i18n="mq3">Web Design</span><span class="mq-sep" aria-hidden="true"></span>
-        <span class="mq-item outline" data-i18n="mq4">Development</span><span class="mq-sep" aria-hidden="true"></span>
+    <div class="marquee" aria-label="Skills" data-i18n-attr="aria-label:mqAria">
+      <div class="marquee-track">
+        <div class="mq-group">
+          <span class="mq-item" data-i18n="mq1">Data Science</span><span class="mq-sep" aria-hidden="true"></span>
+          <span class="mq-item outline" data-i18n="mq2">UX/UI</span><span class="mq-sep" aria-hidden="true"></span>
+          <span class="mq-item" data-i18n="mq3">Web Design</span><span class="mq-sep" aria-hidden="true"></span>
+          <span class="mq-item outline" data-i18n="mq4">Development</span><span class="mq-sep" aria-hidden="true"></span>
+        </div>
       </div>
     </div>
-  </div>
+
+    <section class="page about" id="about" aria-labelledby="about-heading" data-section>
+      <div class="section-label" data-draw>
+        <h2 id="about-heading" data-i18n="aboutLabel">About</h2>
+        <span data-i18n="aboutNote">How I work</span>
+      </div>
+      <div class="about-grid">
+        <p class="about-lead" data-i18n="aboutLead">I look for the stories hidden in public data, and design them so anyone can read them.</p>
+      </div>
+      <ol class="steps">
+        <li class="step"><span class="project-number">01</span><h3 data-i18n="s1t">Research</h3><p data-i18n="s1d">Questions first, then the data to answer them: open government datasets, public sources and web scraping.</p></li>
+        <li class="step"><span class="project-number">02</span><h3 data-i18n="s2t">Analysis</h3><p data-i18n="s2d">Cleaning, exploring and testing the data in Python until the pattern holds up.</p></li>
+        <li class="step"><span class="project-number">03</span><h3 data-i18n="s3t">Visual stories</h3><p data-i18n="s3d">Interactive pieces built with D3.js, Three.js and Tableau, designed to be explored, not just looked at.</p></li>
+      </ol>
+    </section>
+
+    <section class="page contact" id="contact" aria-labelledby="contact-heading" data-section>
+      <div class="section-label" data-draw>
+        <h2 id="contact-heading" data-i18n="contactLabel">Contact</h2>
+        <span data-i18n="contactNote">Let’s talk</span>
+      </div>
+      <p class="contact-title" data-i18n="contactTitle">Have data with a story to tell?</p>
+      <div class="contact-row">
+        <a class="cta" id="cta" href="#">
+          <span class="cta-text"><span class="ul" id="cta-label">Find me on GitHub</span></span>
+          <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
+        </a>
+        <div class="contact-links">
+          <button class="clink" type="button" data-copy-email data-i18n="copyEmail" hidden>Copy email</button>
+          <a class="clink" data-link="linkedin" data-ch="linkedin" href="#" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a class="clink" data-link="github" data-ch="github" href="#" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer class="page footer-wrap">
     <div class="footer">
-      <span data-i18n="foot">Julián Barrera.</span>
+      <span><span data-i18n="foot">Julián Barrera.</span><span class="foot-year">© 2026</span></span>
       <a href="#top" data-scramble><span class="sc" data-i18n="top">Back to top ↑</span></a>
     </div>
   </footer>
 
   <script>
   (() => {
+    'use strict';
+
+    /* =========================================================
+       CONTACT LINKS — empty values stay disabled.
+       ========================================================= */
+    const LINKS = {
+      github: 'https://github.com/barrierj93',
+      linkedin: 'https://www.linkedin.com/in/juli%C3%A1n-barrera-b99ab6192',
+      email: 'jbarrera.contact@gmail.com'
+    };
+
     const $ = (s, c = document) => c.querySelector(s);
     const $$ = (s, c = document) => [...c.querySelectorAll(s)];
     const root = document.documentElement, body = document.body;
@@ -460,12 +687,11 @@
     const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
     const smooth = t => t * t * (3 - 2 * t);
     const easeOut = t => 1 - Math.pow(1 - t, 3);
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const wait = ms => new Promise(r => setTimeout(r, ms));
     const raf = requestAnimationFrame;
-    $$('[data-sync]').forEach(a => {
-      const src = document.querySelector(`.minibar .mb-link[data-label="${a.dataset.sync}"]`);
-      if (src) a.setAttribute('href', src.getAttribute('href'));
-    });
 
+    /* ---------- Text scramble ---------- */
     const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/_';
     const scrambling = new Set();
     function stopScrambles() {
@@ -492,6 +718,7 @@
       el._scr = raf(tick);
     }
 
+    /* ---------- Title split ---------- */
     function split(el) {
       let i = 0;
       $$('.line', el).forEach(line => {
@@ -503,7 +730,7 @@
             const o = document.createElement('span'), inn = document.createElement('span');
             o.className = 'ch'; extra.forEach(k => o.classList.add(k));
             o.style.setProperty('--i', i++);
-            inn.className = 'ch-in'; inn.textContent = c === ' ' ? '\u00a0' : c;
+            inn.className = 'ch-in'; inn.textContent = c === ' ' ? ' ' : c;
             o.appendChild(inn); line.appendChild(o);
           });
         });
@@ -513,51 +740,80 @@
     }
     const title = $('.title');
 
+    /* ---------- Copy (EN / ES) ---------- */
     const I18N = {
       en: {
         pageTitle: 'Julián Barrera — Data Science',
         metaDesc: 'Independent projects by Julián Barrera. Data analysis, interactive visualization and stories about the world we live in.',
         skip: 'Skip to projects', ldNote: 'Data Science', ldFoot: 'Loading<br>independent data projects',
-        navAria: 'Quick navigation', home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
+        navAria: 'Quick navigation', navIndex: 'Index', navAbout: 'About', navContact: 'Contact',
+        home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
         liAria: 'LinkedIn — opens in a new tab', email: 'Email', emailAria: 'Send an email', index: 'Index',
         view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', langAria: 'Language',
         eyebrow: 'Research. Analysis. Visual stories.', h1a: 'EXPLORING', h1b: 'DATA', h1aria: 'Exploring data.',
         byline: 'A collection of <br>independent projects.', label: 'Index',
+        layoutAria: 'Layout', gridView: 'Grid view', listView: 'List view',
         explore: 'Explore', cueAria: 'Scroll to the project index',
         type: 'Data Analysis &amp; Visualization',
         'p1.title': 'Overdue Sessions', 'p1.type': 'Exploratory Data Analysis | Data Visualization', 'p1.aria': 'Overdue Sessions — open project in a new tab',
         'p1.desc': 'An exploratory data analysis of the state of mental health care access in Spain. The project examines waiting times, coverage gaps and regional disparities in public psychological services — combining open government data with web-scraped sources to surface a largely invisible public health issue.',
+        'p1.tools': 'Built with D3.js and Three.js',
         'p2.title': 'CTI Report', 'p2.aria': 'CTI Report — open project in a new tab',
         'p2.l1': 'Cyber threat intelligence', 'p2.l2': 'Follow the signal ↗', 'p2.cap': 'Campaigns. Vectors. Sectors. Connections.',
         'p2.desc': 'A threat intelligence analysis tracking cyberattack campaigns. The project maps attack vectors, targeted sectors and geographic patterns across a multi-year dataset, producing an interactive dashboard.',
+        'p2.tools': 'Built with D3.js',
         'p3.title': 'Bosman Ruling', 'p3.aria': 'Bosman Ruling — open project in a new tab',
         'p3.desc': 'An analytical deep-dive into the long-term impact of the 1995 Bosman ruling on professional football. The project tracks how freedom of movement transformed player transfer markets, squad nationality composition, and wage structures across Europe’s top leagues — using historical data spanning three decades.',
+        'p3.tools': 'Built with JavaScript and Canvas',
         'p4.title': 'Global CO₂ Emissions', 'p4.type': 'Tableau | Data Analysis &amp; Visualization', 'p4.aria': 'Global CO₂ Emissions — open project in a new tab',
         'p4.desc': 'An interactive Tableau dashboard tracking global CO₂ emissions across countries, sectors and time. Built on publicly available climate datasets processed with Python, it allows users to explore emission trends, per-capita comparisons and sectoral breakdowns — making complex climate data accessible and actionable.',
+        'p4.tools': 'Built with Tableau and Python',
         mqAria: 'Skills', mq1: 'Data Science', mq2: 'UX/UI', mq3: 'Web Design', mq4: 'Development',
+        aboutLabel: 'About', aboutNote: 'How I work',
+        aboutLead: 'I look for the stories hidden in public data, and design them so anyone can read them.',
+        s1t: 'Research', s1d: 'Questions first, then the data to answer them: open government datasets, public sources and web scraping.',
+        s2t: 'Analysis', s2d: 'Cleaning, exploring and testing the data in Python until the pattern holds up.',
+        s3t: 'Visual stories', s3d: 'Interactive pieces built with D3.js, Three.js and Tableau, designed to be explored, not just looked at.',
+        contactLabel: 'Contact', contactNote: 'Let’s talk', contactTitle: 'Have data with a story to tell?',
+        ctaEmail: 'Write me an email', ctaLinkedin: 'Message me on LinkedIn', ctaGithub: 'Find me on GitHub',
+        copyEmail: 'Copy email', copied: 'Email copied to the clipboard',
         foot: 'Julián Barrera.', top: 'Back to top ↑'
       },
       es: {
         pageTitle: 'Julián Barrera — Data Science',
         metaDesc: 'Proyectos independientes de Julián Barrera. Análisis de datos, visualización interactiva e historias sobre el mundo en el que vivimos.',
         skip: 'Saltar a los proyectos', ldNote: 'Data Science', ldFoot: 'Cargando<br>proyectos de datos independientes',
-        navAria: 'Navegación rápida', home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
+        navAria: 'Navegación rápida', navIndex: 'Índice', navAbout: 'Sobre mí', navContact: 'Contacto',
+        home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
         liAria: 'LinkedIn — se abre en una pestaña nueva', email: 'Correo', emailAria: 'Enviar un correo', index: 'Índice',
         view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', langAria: 'Idioma',
         eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'EXPLORANDO', h1b: 'DATOS', h1aria: 'Explorando datos.',
         byline: 'Una colección de <br>proyectos independientes.', label: 'Índice',
+        layoutAria: 'Vista', gridView: 'Vista en cuadrícula', listView: 'Vista en lista',
         explore: 'Explorar', cueAria: 'Ir al índice de proyectos',
         type: 'Análisis y visualización de datos',
         'p1.title': 'Sesiones Pendientes', 'p1.type': 'Análisis exploratorio de datos | Visualización de datos', 'p1.aria': 'Sesiones Pendientes — abrir el proyecto en una pestaña nueva',
         'p1.desc': 'Un análisis exploratorio del acceso a la atención en salud mental en España. El proyecto examina los tiempos de espera, las carencias de cobertura y las desigualdades territoriales en los servicios públicos de psicología, combinando datos abiertos oficiales con fuentes obtenidas mediante web scraping para sacar a la luz un problema de salud pública en gran parte invisible.',
+        'p1.tools': 'Hecho con D3.js y Three.js',
         'p2.title': 'CTI Report', 'p2.aria': 'CTI Report — abrir el proyecto en una pestaña nueva',
         'p2.l1': 'Inteligencia de ciberamenazas', 'p2.l2': 'Sigue la señal ↗', 'p2.cap': 'Campañas. Vectores. Sectores. Conexiones.',
         'p2.desc': 'Un análisis de inteligencia de amenazas que sigue campañas de ciberataques. El proyecto mapea vectores de ataque, sectores objetivo y patrones geográficos a partir de un conjunto de datos de varios años, y lo convierte en un dashboard interactivo.',
+        'p2.tools': 'Hecho con D3.js',
         'p3.title': 'Sentencia Bosman', 'p3.aria': 'Sentencia Bosman — abrir el proyecto en una pestaña nueva',
         'p3.desc': 'Un análisis en profundidad del impacto a largo plazo de la sentencia Bosman de 1995 en el fútbol profesional. El proyecto sigue cómo la libre circulación transformó el mercado de fichajes, la composición por nacionalidades de las plantillas y las estructuras salariales de las grandes ligas europeas, con datos históricos de tres décadas.',
+        'p3.tools': 'Hecho con JavaScript y Canvas',
         'p4.title': 'Emisiones globales de CO₂', 'p4.type': 'Tableau | Análisis y visualización de datos', 'p4.aria': 'Emisiones globales de CO₂ — abrir el proyecto en una pestaña nueva',
         'p4.desc': 'Un dashboard interactivo en Tableau que sigue las emisiones globales de CO₂ por países, sectores y a lo largo del tiempo. Construido con datos climáticos públicos procesados con Python, permite explorar tendencias de emisiones, comparativas per cápita y desgloses por sector, haciendo accesibles y útiles unos datos climáticos complejos.',
+        'p4.tools': 'Hecho con Tableau y Python',
         mqAria: 'Habilidades', mq1: 'Ciencia de datos', mq2: 'UX/UI', mq3: 'Diseño web', mq4: 'Desarrollo',
+        aboutLabel: 'Sobre mí', aboutNote: 'Cómo trabajo',
+        aboutLead: 'Busco las historias que esconden los datos públicos y las diseño para que cualquiera pueda leerlas.',
+        s1t: 'Investigación', s1d: 'Primero las preguntas; después, los datos para responderlas: datos abiertos oficiales, fuentes públicas y web scraping.',
+        s2t: 'Análisis', s2d: 'Limpiar, explorar y contrastar los datos con Python hasta que el patrón se sostiene.',
+        s3t: 'Historias visuales', s3d: 'Piezas interactivas hechas con D3.js, Three.js y Tableau, pensadas para explorarse, no solo para mirarse.',
+        contactLabel: 'Contacto', contactNote: 'Hablemos', contactTitle: '¿Tienes datos con una historia que contar?',
+        ctaEmail: 'Escríbeme un email', ctaLinkedin: 'Escríbeme por LinkedIn', ctaGithub: 'Encuéntrame en GitHub',
+        copyEmail: 'Copiar email', copied: 'Email copiado al portapapeles',
         foot: 'Julián Barrera.', top: 'Volver arriba ↑'
       }
     };
@@ -569,6 +825,30 @@
     }
     let LANG = detectLang();
     const T = k => I18N[LANG][k];
+
+    /* ---------- Links & contact ---------- */
+    const ctaKind = () => LINKS.email ? 'email' : LINKS.linkedin ? 'linkedin' : 'github';
+    function hrefFor(k) { const v = LINKS[k]; return !v ? '' : (k === 'email' ? 'mailto:' + v : v); }
+    function applyLinks() {
+      $$('[data-link]').forEach(a => {
+        const h = hrefFor(a.dataset.link);
+        if (h) { a.setAttribute('href', h); a.removeAttribute('aria-disabled'); a.classList.remove('is-off'); }
+        else { a.setAttribute('href', '#'); a.setAttribute('aria-disabled', 'true'); a.classList.add('is-off'); }
+      });
+      const kind = ctaKind(), cta = $('#cta');
+      cta.setAttribute('href', hrefFor(kind) || '#');
+      if (kind === 'email') { cta.removeAttribute('target'); cta.removeAttribute('rel'); }
+      else { cta.setAttribute('target', '_blank'); cta.setAttribute('rel', 'noopener noreferrer'); }
+      $$('.contact-links [data-ch]').forEach(a => { a.hidden = a.dataset.ch === kind; });
+      $('[data-copy-email]').hidden = !LINKS.email;
+    }
+    function ctaText() {
+      const k = ctaKind();
+      $('#cta-label').textContent = T(k === 'email' ? 'ctaEmail' : k === 'linkedin' ? 'ctaLinkedin' : 'ctaGithub');
+    }
+
+    /* ---------- Language ---------- */
+    let firstLang = true;
     function applyLang(lang) {
       LANG = lang;
       stopScrambles();
@@ -585,15 +865,89 @@
       title.setAttribute('aria-label', d.h1aria);
       title.classList.remove('split');
       split(title);
+      if (!firstLang && body.classList.contains('ready') && !reduce) {
+        $$('.ch-in', title).forEach((c, i) => c.animate(
+          [{ transform: 'translateY(108%)' }, { transform: 'none' }],
+          { duration: 1000, delay: 120 + i * 32, easing: 'cubic-bezier(.19,1,.22,1)', fill: 'backwards' }));
+      }
+      firstLang = false;
       $$('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+      ctaText();
       syncThemeBtns();
+      syncSectionLabel();
     }
-    applyLang(LANG);
 
+    /* ---------- Torn-paper geometry ---------- */
+    const f1 = v => Math.round(v * 10) / 10;
+    function tearEdge(n, amp, tilt) {
+      const ph = [rnd(0, 6.28), rnd(0, 6.28), rnd(0, 6.28)], fq = [rnd(.6, 1.4), rnd(2.2, 3.8), rnd(6, 9)];
+      const dir = Math.random() < .5, pts = [];
+      for (let i = 0; i <= n; i++) {
+        let t = i / n;
+        if (i > 0 && i < n) t = clamp(t + rnd(-.32, .32) / n);
+        const wave = Math.sin(t * 6.283 * fq[0] + ph[0]) * .5 + Math.sin(t * 6.283 * fq[1] + ph[1]) * .3 + Math.sin(t * 6.283 * fq[2] + ph[2]) * .2;
+        const tooth = (i % 2 ? 1 : -1) * rnd(.1, .6);
+        pts.push([t * 100, amp * (wave * .55 + tooth * .45) + tilt * (dir ? t : 1 - t)]);
+      }
+      const min = Math.min(...pts.map(p => p[1]));
+      pts.forEach(p => { p[1] -= min; });
+      return pts;
+    }
+    function rimWidths(n, a, b) {
+      const r = Array.from({ length: n + 1 }, () => rnd(a, b));
+      return r.map((v, i) => (v * 2 + (r[i - 1] ?? v) + (r[i + 1] ?? v)) / 4);
+    }
+    const px = v => (v < 0 ? ` - ${f1(-v)}px` : ` + ${f1(v)}px`);
+    function edgeBelow(pts, add, pct, off) {
+      const v = pts.map((p, i) => `${f1(p[0])}% calc(${pct}%${px(p[1] + (add ? add[i] : 0) + off)})`);
+      v.push('100% calc(100% + 900px)', '0% calc(100% + 900px)');
+      return `polygon(${v.join(',')})`;
+    }
+    function edgeAbove(pts, add, pct, off) {
+      const v = ['0% -900px', '100% -900px'];
+      for (let i = pts.length - 1; i >= 0; i--) v.push(`${f1(pts[i][0])}% calc(${pct}%${px(pts[i][1] + (add ? add[i] : 0) + off)})`);
+      return `polygon(${v.join(',')})`;
+    }
+    function makeTear(el, o = {}) {
+      const w = el.offsetWidth || 640;
+      const n = Math.round(clamp(w / (o.step || 11), 16, 120));
+      const pts = tearEdge(n, o.amp ?? 9, o.tilt ?? rnd(8, 18));
+      const rim = rimWidths(n, o.rmin ?? 2.5, o.rmax ?? 8);
+      const lift = -(Math.max(...pts.map(p => p[1])) + Math.max(...rim) + 4);
+      el.style.setProperty('--ta0', edgeBelow(pts, null, 100, 2));
+      el.style.setProperty('--ta1', edgeBelow(pts, null, 0, lift));
+      el.style.setProperty('--tb0', edgeBelow(pts, rim, 100, 2));
+      el.style.setProperty('--tb1', edgeBelow(pts, rim, 0, lift));
+    }
+    function whenLoaded(img, max = 1600) {
+      return new Promise(res => {
+        if (!img || (img.complete && img.naturalWidth)) { res(); return; }
+        let t;
+        const done = () => { clearTimeout(t); img.removeEventListener('load', done); res(); };
+        img.addEventListener('load', done);
+        t = setTimeout(done, max);
+      });
+    }
+    function tearIn(el) {
+      if (el.classList.contains('in')) return;
+      const token = (el._tok = (el._tok || 0) + 1);
+      whenLoaded($('img', el)).then(() => {
+        if (token !== el._tok) return;
+        el.classList.add('in');
+        clearTimeout(el._done);
+        el._done = setTimeout(() => { if (token === el._tok) el.classList.add('done'); }, 1750);
+      });
+    }
+    function tearReset(el) { el._tok = (el._tok || 0) + 1; clearTimeout(el._done); el.classList.remove('in', 'done'); }
+
+    /* ---------- Element refs & state ---------- */
     const track = $('.hero-track'), sticky = $('.hero-sticky'), topbar = $('.topbar');
     const intro = $('.intro'), label = $('.section-label'), heroFoot = $('.hero-foot');
-    const projects = $('#projects'), minibar = $('.minibar'), mbProgress = $('.mb-progress');
-    const mqTrack = $('.marquee-track'), cursorEl = $('.cursor');
+    const projects = $('#projects'), grid = $('.project-grid'), minibar = $('.minibar'), mbProgress = $('.mb-progress');
+    const mqTrack = $('.marquee-track'), cursorEl = $('.cursor'), toastEl = $('.toast');
+    const items = $$('.project');
+    let VIEW = root.getAttribute('data-view') === 'list' ? 'list' : 'grid';
+    let curSec = '';
 
     function cloneMarquee() {
       const groups = $$('.mq-group', mqTrack);
@@ -604,7 +958,6 @@
         mqTrack.appendChild(g);
       }
     }
-    cloneMarquee();
 
     const st = { pin: false, D: 0, offset: 0, threshold: 0, lastS: -1, cHidden: false, hs: 0, s: scrollY, sS: scrollY, prevS: scrollY, last: -1,
                  mqX: 0, mqW: 1, mqSpeed: 1, mqDir: 1, mqSkew: 0, mqOn: false, eyebrowDone: false, labelDone: false,
@@ -612,6 +965,7 @@
                  lw: innerWidth, lh: innerHeight };
     const LERP = fine ? 0.11 : 0.24;
 
+    /* ---------- Hero layout ---------- */
     function setNoPin() {
       st.pin = false;
       body.classList.add('no-pin');
@@ -641,7 +995,10 @@
       l2.style.fontSize = r.toFixed(4) + 'em';
       let fs = parseFloat(getComputedStyle(title).fontSize);
       const H = sticky.clientHeight, base = fs;
-      if (innerWidth > 680) fs = Math.min(fs, fs * ((innerWidth / 2 - a.l) / 1.06) / (a.r - a.l));
+      if (innerWidth > 680 && innerWidth <= 1000 && innerHeight > innerWidth) {
+        const colR = title.parentElement.getBoundingClientRect().right;
+        fs = fs * ((colR - a.l) * 0.96 / 1.06) / (a.r - a.l);
+      } else if (innerWidth > 680) fs = Math.min(fs, fs * ((innerWidth / 2 - a.l) / 1.06) / (a.r - a.l));
       else { const box = title.parentElement.getBoundingClientRect(); fs = fs * (box.right - a.l) / (a.r - a.l); }
       const maxT = Math.min(H - 330, H * 0.5);
       if (fs * 0.84 * (1 + r) + 10 > maxT && maxT > 120) fs = (maxT - 10) / (0.84 * (1 + r));
@@ -657,17 +1014,15 @@
       fitCopy();
     }
     function fitCopy() {
-      const ps = $$('.intro-copy > p');
-      ps.forEach(p => { p.style.fontSize = ''; });
+      const p = $('.byline');
+      p.style.fontSize = '';
       if (innerWidth > 680) return;
       const W = $('.intro-copy').getBoundingClientRect().width;
-      const textW = p => { const r = document.createRange(); r.selectNodeContents(p); return r.getBoundingClientRect().width; };
-      ps.forEach(p => {
-        for (let k = 0; k < 3; k++) {
-          const w = textW(p), fs = parseFloat(getComputedStyle(p).fontSize);
-          if (w > 0) p.style.fontSize = (fs * W / w * 0.997).toFixed(2) + 'px';
-        }
-      });
+      const textW = () => { const r = document.createRange(); r.selectNodeContents(p); return r.getBoundingClientRect().width; };
+      for (let k = 0; k < 3; k++) {
+        const w = textW(), fs = parseFloat(getComputedStyle(p).fontSize);
+        if (w > 0) p.style.fontSize = (fs * W / w * 0.997).toFixed(2) + 'px';
+      }
     }
     function measure() {
       body.classList.remove('no-pin');
@@ -675,6 +1030,7 @@
       projects.style.marginTop = ''; projects.style.transform = '';
       fitTitle();
       st.mqW = $('.mq-group', mqTrack).getBoundingClientRect().width || 1;
+      pv.w = pvEl.offsetWidth; pv.h = pvEl.offsetHeight;
       if (reduce) { setNoPin(); return; }
 
       const H = sticky.clientHeight, top0 = sticky.getBoundingClientRect().top;
@@ -704,10 +1060,12 @@
         st.last = sS;
         const p = clamp(sS / st.D), e = smooth(p);
         const cue = 1 - clamp(p / 0.18);
+        const lt = clamp((p - 0.6) / 0.3);
         sticky.style.setProperty('--by', (st.offset * (1 - e)).toFixed(2) + 'px');
         sticky.style.setProperty('--hs', (1 + st.hs * (1 - e)).toFixed(4));
         sticky.style.setProperty('--lp', easeOut(clamp((p - 0.25) / 0.6)).toFixed(4));
-        sticky.style.setProperty('--lt', clamp((p - 0.6) / 0.3).toFixed(3));
+        sticky.style.setProperty('--lt', lt.toFixed(3));
+        sticky.style.setProperty('--ltp', lt < 0.5 ? 'none' : 'auto');
         sticky.style.setProperty('--ey', clamp((p - 0.35) / 0.4).toFixed(3));
         const ic = 1 - clamp((p - 0.3) / 0.4);
         sticky.style.setProperty('--ic', ic.toFixed(3));
@@ -725,6 +1083,7 @@
       mbProgress.style.setProperty('--sp', max > 0 ? (s / max).toFixed(4) : 0);
     }
 
+    /* ---------- Marquee ---------- */
     function marquee() {
       if (!st.mqOn || reduce) return;
       const vel = st.s - st.prevS;
@@ -738,6 +1097,12 @@
       mqTrack.style.transform = `translate3d(${st.mqX.toFixed(2)}px,0,0) skewX(${st.mqSkew.toFixed(2)}deg)`;
     }
 
+    /* ---------- Cursor ---------- */
+    function cursorOn(link, e) {
+      cursorEl.textContent = link.getAttribute('href') === '#' ? T('soon') : T('view');
+      if (st.csc < 0.01 && e) { st.px = e.clientX; st.py = e.clientY; }
+      st.con = true;
+    }
     function cursor() {
       if (!fine) return;
       st.px += (st.cx - st.px) * 0.2; st.py += (st.cy - st.py) * 0.2;
@@ -747,88 +1112,264 @@
       cursorEl.style.transform = `translate3d(${st.px.toFixed(1)}px,${st.py.toFixed(1)}px,0) scale(${st.csc.toFixed(3)})`;
     }
 
-    function loop(now) {
+    /* ---------- List view: floating preview ---------- */
+    const pvEl = $('.preview'), pvIn = $('.preview-in');
+    const pv = { built: false, slides: [], active: -1, z: 1, on: false, s: 0, x: 0, y: 0, r: 0, lcx: 0, w: 0, h: 0, hideT: 0, hidden: true };
+    const previewOK = () => fine && !reduce && VIEW === 'list' && innerWidth > 680;
+    function buildPreview() {
+      if (pv.built) return;
+      items.forEach(p => {
+        const pic = $('picture', p).cloneNode(true), img = $('img', pic);
+        img.removeAttribute('loading'); img.className = '';
+        const slide = document.createElement('div'), inn = document.createElement('div');
+        slide.className = 'pv-slide tear'; inn.className = 'tear-in';
+        inn.appendChild(pic); slide.appendChild(inn); pvIn.appendChild(slide);
+        pv.slides.push(slide);
+      });
+      pv.w = pvEl.offsetWidth; pv.h = pvEl.offsetHeight;
+      pv.slides.forEach(sl => makeTear(sl, { amp: 6, tilt: rnd(6, 12), rmin: 2, rmax: 6, step: 9 }));
+      pv.built = true;
+    }
+    function pvTarget() {
+      let tx = st.cx + 40;
+      if (tx + pv.w > innerWidth - 20) tx = st.cx - 40 - pv.w;
+      return [tx, clamp(st.cy - pv.h / 2, 14, innerHeight - pv.h - 14)];
+    }
+    function pvShow(i) {
+      if (i === pv.active) return;
+      const sl = pv.slides[i];
+      tearReset(sl);
+      sl.style.zIndex = ++pv.z;
+      void sl.offsetWidth;
+      tearIn(sl);
+      pv.active = i;
+    }
+    function preview() {
+      if (!pv.built) return;
+      pv.s += ((pv.on ? 1 : 0) - pv.s) * 0.14;
+      if (!pv.on && pv.s < 0.004) {
+        if (!pv.hidden) { pvEl.style.opacity = '0'; pv.hidden = true; pv.active = -1; }
+        return;
+      }
+      pv.hidden = false;
+      const [tx, ty] = pvTarget();
+      pv.x += (tx - pv.x) * 0.15; pv.y += (ty - pv.y) * 0.15;
+      const vx = st.cx - pv.lcx; pv.lcx = st.cx;
+      pv.r += (clamp(vx * 0.22, -6, 6) - pv.r) * 0.1;
+      pvEl.style.opacity = pv.s.toFixed(3);
+      pvEl.style.transform = `translate3d(${pv.x.toFixed(1)}px,${pv.y.toFixed(1)}px,0) rotate(${pv.r.toFixed(2)}deg) scale(${(0.72 + 0.28 * pv.s).toFixed(3)})`;
+    }
+
+    function loop() {
       st.s = scrollY;
       const d = st.s - st.sS;
       st.sS += d * LERP;
       if (Math.abs(d) < 0.08) st.sS = st.s;
-      render(); marquee(); cursor();
+      render(); marquee(); cursor(); preview();
       st.prevS = st.s;
       raf(loop);
     }
 
-    $('.cue').addEventListener('click', () => {
-      const top = st.pin ? st.D : projects.getBoundingClientRect().top + scrollY - 80;
-      window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+    /* ---------- Reveal ---------- */
+    function reveal(p) {
+      p.classList.add('in');
+      $$('[data-reveal]', p).forEach(el => el.classList.add('in'));
+      const c = $('.cover', p);
+      if (c && getComputedStyle(c).display !== 'none') tearIn(c);
+    }
+    let io = null;
+    function observeProjects() {
+      if (!io) { items.forEach(reveal); return; }
+      items.forEach(p => { io.unobserve(p); io.observe(p); });
+    }
+
+    /* ---------- Grid / list switch ---------- */
+    let switching = false;
+    function syncViewBtns() { $$('.view-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === VIEW))); }
+    function setView(v) {
+      if (v === VIEW || switching) return;
+      try { localStorage.setItem('jb-view', v); } catch (e) {}
+      $$('.view-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+      const apply = () => {
+        VIEW = v;
+        root.setAttribute('data-view', v);
+        syncViewBtns();
+        pv.on = false;
+        st.con = false;
+        $$('.cover').forEach(tearReset);
+        st.lastS = -1;
+        observeProjects();
+        if (previewOK()) setTimeout(buildPreview, 400);
+      };
+      if (reduce || !items[0].animate) { apply(); return; }
+      switching = true;
+      const outs = items.map((el, i) => el.animate(
+        [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-12px)' }],
+        { duration: 260, delay: i * 35, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' }));
+      Promise.all(outs.map(a => a.finished.catch(() => {}))).then(() => {
+        apply();
+        outs.forEach(a => a.cancel());
+        items.forEach((el, i) => el.animate(
+          [{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 950, delay: 60 + i * 75, easing: 'cubic-bezier(.19,1,.22,1)', fill: 'backwards' }));
+        switching = false;
+      });
+    }
+    $$('.view-btn').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+    syncViewBtns();
+
+    /* ---------- Sections (minibar context) ---------- */
+    function syncSectionLabel(animate) {
+      const idx = $('.mb-index'), k = $('.mb-k', idx);
+      const txt = curSec === 'about' ? T('navAbout') : curSec === 'contact' ? T('navContact') : T('index');
+      idx.classList.toggle('sec', curSec === 'about' || curSec === 'contact');
+      if (animate) scramble(k, txt, 500); else { delete k.dataset.text; k.textContent = txt; }
+    }
+    function setSection(id) {
+      if (id === curSec) return;
+      curSec = id;
+      syncSectionLabel(true);
+    }
+    function scrollToSection(id) {
+      let top;
+      if (id === 'projects') top = st.pin ? st.D : projects.getBoundingClientRect().top + scrollY - 80;
+      else top = $('#' + id).getBoundingClientRect().top + scrollY - 76;
+      window.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+    }
+    $('.cue').addEventListener('click', () => scrollToSection('projects'));
+    $('.skip').addEventListener('click', e => { e.preventDefault(); scrollToSection('projects'); const l = $('.project-link'); if (l) l.focus({ preventScroll: true }); });
+
+    /* ---------- Toast, copy, disabled links ---------- */
+    let toastT = 0;
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastT);
+      toastT = setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+    async function copyText(text) {
+      try { await navigator.clipboard.writeText(text); return true; }
+      catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(ta); ta.select();
+        let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+        ta.remove(); return ok;
+      }
+    }
+    $('[data-copy-email]').addEventListener('click', async () => { if (LINKS.email && await copyText(LINKS.email)) toast(T('copied')); });
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href="#"]');
+      if (!a) return;
+      e.preventDefault();
     });
 
-    $$('a[href="#"]').forEach(a => { a.setAttribute('aria-disabled', 'true'); a.addEventListener('click', e => e.preventDefault()); });
-
+    /* ---------- Hover: scramble, cursor, parallax, preview ---------- */
     $$('[data-scramble]').forEach(el => el.addEventListener('mouseenter', () => scramble($('.sc', el))));
     $$('.project-link').forEach(link => link.addEventListener('mouseenter', () => {
       $$('.cover-label span, .project-type', link).forEach((el, i) => scramble(el, null, 520 + i * 120));
     }));
 
     if (fine) {
-      window.addEventListener('pointermove', e => {
-        st.cx = e.clientX; st.cy = e.clientY;
-      }, { passive: true });
+      window.addEventListener('pointermove', e => { st.cx = e.clientX; st.cy = e.clientY; }, { passive: true });
       $$('.cover').forEach(c => {
         const art = $('.art', c), link = c.closest('.project-link');
-        c.addEventListener('pointerenter', e => {
-          cursorEl.textContent = link.getAttribute('href') === '#' ? T('soon') : T('view');
-          if (st.csc < 0.01) { st.px = e.clientX; st.py = e.clientY; }
-          st.con = true;
-        });
+        c.addEventListener('pointerenter', e => { if (VIEW === 'grid') cursorOn(link, e); });
         c.addEventListener('pointermove', e => {
+          if (VIEW !== 'grid') return;
           const r = c.getBoundingClientRect();
           const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
           art.style.setProperty('--tx', (-nx * 20).toFixed(1) + 'px');
           art.style.setProperty('--ty', (-ny * 13).toFixed(1) + 'px');
         });
         c.addEventListener('pointerleave', () => {
-          st.con = false;
+          if (VIEW === 'grid') st.con = false;
           art.style.removeProperty('--tx'); art.style.removeProperty('--ty');
+        });
+      });
+      items.forEach((p, i) => {
+        const link = $('.project-link', p);
+        link.addEventListener('pointerenter', e => {
+          if (!previewOK()) return;
+          clearTimeout(pv.hideT);
+          buildPreview();
+          if (pv.s < 0.05) { st.cx = e.clientX; st.cy = e.clientY; const [tx, ty] = pvTarget(); pv.x = tx; pv.y = ty; pv.lcx = e.clientX; }
+          pv.on = true;
+          pvShow(i);
+        });
+        link.addEventListener('pointerleave', () => {
+          if (VIEW !== 'list') return;
+          pv.hideT = setTimeout(() => { pv.on = false; }, 90);
         });
       });
     } else {
       cursorEl.remove();
     }
 
+    /* ---------- Observers ---------- */
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver(es => es.forEach(e => {
+      io = new IntersectionObserver(es => es.forEach(e => {
+        if (!e.isIntersecting) return;
+        reveal(e.target);
+        io.unobserve(e.target);
+      }), { threshold: 0.06, rootMargin: '0px 0px -6% 0px' });
+      observeProjects();
+
+      const pre = new IntersectionObserver(es => es.forEach(e => {
+        if (!e.isIntersecting) return;
+        const img = $('img', e.target); if (img) img.loading = 'eager';
+        pre.unobserve(e.target);
+      }), { rootMargin: '0px 0px 900px 0px' });
+      items.forEach(p => pre.observe(p));
+
+      const once = new IntersectionObserver(es => es.forEach(e => {
         if (!e.isIntersecting) return;
         const t = e.target;
         t.classList.add('in');
-        $$('.cover, [data-reveal]', t).forEach(el => el.classList.add('in'));
-        io.unobserve(t);
-      }), { threshold: 0.06, rootMargin: '0px 0px -6% 0px' });
-      $$('.project').forEach(el => io.observe(el));
+        if (t.matches('.section-label')) { const h = $('h2', t), n = t.children[1]; scramble(h, null, 700); if (n) scramble(n, null, 900); }
+        once.unobserve(t);
+      }), { threshold: 0.4 });
+      $$('.section-label[data-draw], .steps').forEach(el => once.observe(el));
 
       new IntersectionObserver(es => es.forEach(e => { st.mqOn = e.isIntersecting; })).observe($('.marquee'));
 
-      const mbNum = $('#mb-num'), mbTitle = $('#mb-title');
-      const activeIO = new IntersectionObserver(es => es.forEach(e => {
-        if (!e.isIntersecting) return;
-        const n = String($$('.project').indexOf(e.target) + 1).padStart(2, '0');
-        if (mbNum.textContent !== n) { scramble(mbNum, n, 400); scramble(mbTitle, e.target.dataset.title, 600); }
-      }), { rootMargin: '-45% 0px -45% 0px' });
-      $$('.project').forEach(p => activeIO.observe(p));
+      const mbNum = $('#mb-num'), mbTitle = $('#mb-title'), inBand = new Set();
+      const activeIO = new IntersectionObserver(es => {
+        es.forEach(e => { if (e.isIntersecting) inBand.add(e.target); else inBand.delete(e.target); });
+        if (!inBand.size) return;
+        const first = items.find(p => inBand.has(p));
+        const n = String(items.indexOf(first) + 1).padStart(2, '0');
+        if (mbNum.textContent !== n) { scramble(mbNum, n, 400); scramble(mbTitle, first.dataset.title, 600); }
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      items.forEach(p => activeIO.observe(p));
+
+      const secIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setSection(e.target.id); }),
+        { rootMargin: '-42% 0px -52% 0px' });
+      $$('[data-section]').forEach(s => secIO.observe(s));
     } else {
-      $$('[data-reveal], .cover').forEach(el => el.classList.add('in'));
+      items.forEach(reveal);
+      $$('.section-label[data-draw], .steps').forEach(el => el.classList.add('in'));
     }
 
+    /* ---------- Language switch ---------- */
     $$('.lang button').forEach(b => b.addEventListener('click', () => {
       const lang = b.dataset.lang;
       if (lang === LANG) return;
       try { localStorage.setItem('jb-lang', lang); } catch (e) {}
-      applyLang(lang);
-      cloneMarquee();
-      const n = parseInt($('#mb-num').textContent, 10) || 1, art = $$('.project')[n - 1];
-      if (art) $('#mb-title').textContent = art.dataset.title;
-      measure();
+      const go = () => {
+        applyLang(lang);
+        cloneMarquee();
+        const n = parseInt($('#mb-num').textContent, 10) || 1, art = items[n - 1];
+        if (art) $('#mb-title').textContent = art.dataset.title;
+        measure();
+      };
+      if (!document.startViewTransition || reduce) { go(); return; }
+      root.classList.add('vt-lang');
+      const vt = document.startViewTransition(go);
+      vt.finished.finally(() => root.classList.remove('vt-lang'));
     }));
 
+    /* ---------- Theme ---------- */
     const mqDark = matchMedia('(prefers-color-scheme: dark)');
     function curTheme() { return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
     function syncThemeBtns() {
@@ -841,10 +1382,13 @@
       if (!document.startViewTransition || reduce || !origin) { go(); return; }
       const r = origin.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
       const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-      document.startViewTransition(go).ready.then(() => {
+      root.classList.add('vt-theme');
+      const vt = document.startViewTransition(go);
+      vt.ready.then(() => {
         root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${R}px at ${x}px ${y}px)`] },
                      { duration: 700, easing: 'cubic-bezier(.77,0,.18,1)', pseudoElement: '::view-transition-new(root)' });
       }).catch(() => {});
+      vt.finished.finally(() => root.classList.remove('vt-theme'));
     }
     $$('[data-theme-toggle]').forEach(b => b.addEventListener('click', () => {
       const t = curTheme() === 'dark' ? 'light' : 'dark';
@@ -853,7 +1397,13 @@
     }));
     const onSys = e => { let saved = null; try { saved = localStorage.getItem('jb-theme'); } catch (_) {} if (!saved) setTheme(e.matches ? 'dark' : 'light'); };
     mqDark.addEventListener ? mqDark.addEventListener('change', onSys) : mqDark.addListener(onSys);
-    syncThemeBtns();
+
+    /* ---------- Init ---------- */
+    applyLinks();
+    applyLang(LANG);
+    cloneMarquee();
+    $$('.cover').forEach(c => makeTear(c));
+    const fy = $('.foot-year'); if (fy) fy.textContent = '© ' + new Date().getFullYear();
 
     let rt;
     window.addEventListener('resize', () => {
@@ -861,8 +1411,11 @@
       rt = setTimeout(() => {
         const w = innerWidth, h = innerHeight;
         if (w !== st.lw || Math.abs(h - st.lh) > 120) { st.lw = w; st.lh = h; measure(); }
+        if (pv.on && !previewOK()) pv.on = false;
+        items.forEach(p => { const c = $('.cover', p); if (p.classList.contains('in') && c && getComputedStyle(c).display !== 'none') tearIn(c); });
       }, 140);
     });
+    if (previewOK()) setTimeout(buildPreview, 1600);
     window.addEventListener('load', measure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { st.lw = innerWidth; st.lh = innerHeight; measure(); });
 
@@ -871,22 +1424,36 @@
     render();
     raf(loop);
 
+    /* ---------- Loader: count, then tear the sheet away ---------- */
     function ready() { raf(() => raf(() => body.classList.add('ready'))); }
+    function tearLoader(ld) {
+      const n = Math.round(clamp(innerWidth / 15, 30, 130));
+      const pts = tearEdge(n, 20, rnd(26, 52)), rim = rimWidths(n, 4, 12);
+      const P = Math.max(...pts.map(p => p[1])), R = Math.max(...rim), neg = rim.map(v => -v);
+      ld.style.setProperty('--lr0', edgeAbove(pts, null, 100, R + 3));
+      ld.style.setProperty('--ls0', edgeAbove(pts, neg, 100, R + 3));
+      ld.style.setProperty('--lr1', edgeAbove(pts, null, 0, -(P + 4)));
+      ld.style.setProperty('--ls1', edgeAbove(pts, neg, 0, -(P + 4)));
+      ld.classList.add('tearing');
+      void ld.offsetWidth;
+      ld.classList.add('out');
+    }
     const ld = $('.loader');
     if (!root.classList.contains('no-loader') && ld) {
       try { sessionStorage.setItem('jb-seen', '1'); } catch (e) {}
       const num = $('#ld-num'), t0 = performance.now(), dur = 1150;
+      const fontsReady = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, wait(2400)]) : Promise.resolve();
       const tick = now => {
         const t = clamp((now - t0) / dur), v = easeOut(t);
         num.textContent = String(Math.round(v * 100)).padStart(3, '0');
         ld.style.setProperty('--lp', v.toFixed(4));
         if (t < 1) { raf(tick); return; }
-        setTimeout(() => {
-          ld.classList.add('out');
+        fontsReady.then(() => wait(140)).then(() => {
+          tearLoader(ld);
           root.classList.remove('loading');
-          setTimeout(ready, 250);
-          setTimeout(() => ld.remove(), 1100);
-        }, 160);
+          setTimeout(ready, 260);
+          setTimeout(() => ld.remove(), 1250);
+        });
       };
       raf(tick);
     } else {
