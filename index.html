@@ -117,22 +117,26 @@
     body.ready .topbar::after, body.ready .topbar > * { transform:none; opacity:1; }
     .name { text-decoration:none; font-size:15px; font-weight:900; letter-spacing:-.5px; }
     .eyebrow,.section-label,.project-number,.cover-label,.project-type,.project-year,.footer,.hero-foot,.mb-index,.project-tools { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
-    .topbar-right { display:flex; align-items:center; gap:14px; margin-right:-1px; }
+    .topbar-right { display:flex; align-items:center; margin-right:-10px; }
     .top-links { display:flex; align-items:center; gap:2px; }
-    :root[data-theme="dark"] img.mb-ico { filter:brightness(0) invert(.93) sepia(.08); }
+    .sprite { position:absolute; width:0; height:0; overflow:hidden; }
     .theme-btn { position:relative; display:grid; place-items:center; width:36px; height:36px; padding:0; border:0; border-radius:50%; background:none; color:var(--ink); cursor:pointer; }
     .theme-btn::before { content:""; position:absolute; inset:0; border-radius:50%; background:var(--paper); border:1px solid var(--ink); transform:scale(0); transition:transform .5s var(--ease); }
-    .theme-btn svg { position:relative; width:18px; height:18px; transition:transform .7s var(--ease); }
+    .theme-btn svg { position:relative; width:20px; height:20px; transition:transform .7s var(--ease); }
     .theme-btn:focus-visible::before { transform:scale(1); }
     .theme-btn .i-sun { display:none; }
     :root[data-theme="dark"] .theme-btn .i-sun { display:block; }
     :root[data-theme="dark"] .theme-btn .i-moon { display:none; }
     html.vt-theme::view-transition-old(root), html.vt-theme::view-transition-new(root) { animation:none; mix-blend-mode:normal; }
     html.vt-lang::view-transition-old(root), html.vt-lang::view-transition-new(root) { animation-duration:.42s; animation-timing-function:cubic-bezier(.4,0,.2,1); }
-    .top-sep { width:1px; height:18px; background:var(--line); }
-    .lang { display:flex; align-items:center; gap:6px; font:700 11px/1 var(--mono); letter-spacing:1px; color:var(--muted); }
-    .lang button { appearance:none; border:0; padding:3px 1px 2px; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; color:var(--muted); font:inherit; letter-spacing:inherit; cursor:pointer; transition:color .3s, background-size .5s var(--ease); }
-    .lang button[aria-pressed="true"] { color:var(--ink); background-size:100% .55em; }
+    .top-sep { width:1px; height:16px; margin:0 16px 0 8px; background:var(--line); }
+    .topbar-right > .theme-btn { margin-left:6px; }
+    .lang { display:flex; align-items:center; gap:6px; height:36px; font:700 11px/1 var(--mono); letter-spacing:1px; color:var(--muted); }
+    .lang button { appearance:none; display:flex; align-items:center; height:36px; padding:0; border:0; background:none; color:var(--muted); font:inherit; letter-spacing:inherit; cursor:pointer; transition:color .3s; }
+    .lang button span { padding:3px 1px 2px 2px; background:linear-gradient(var(--hl),var(--hl)) 0 90% / 0 .55em no-repeat; transition:background-size .5s var(--ease); }
+    .lang button[aria-pressed="true"] { color:var(--ink); }
+    .lang button[aria-pressed="true"] span { background-size:100% .55em; }
+    .lang button:focus-visible { outline-offset:2px; }
     a.is-off { cursor:default; }
 
     /* ---------- Hero ---------- */
@@ -167,7 +171,7 @@
     .section-label::before, .section-label::after { content:""; position:absolute; left:0; right:0; height:1px; background:var(--ink); transform:scaleX(var(--lp,1)); transform-origin:left; }
     .section-label::before { top:0; } .section-label::after { bottom:0; }
     .section-label > * { opacity:var(--lt,1); pointer-events:var(--ltp,auto); }
-    .section-label:focus-within > * { opacity:1; pointer-events:auto; }
+    .section-label:has(:focus-visible) > * { opacity:1; pointer-events:auto; }
     .section-label h2 { margin:0; font:inherit; }
     .label-right { display:flex; align-items:center; gap:16px; }
     .view-toggle { display:flex; align-items:center; gap:2px; margin:-6px 0; }
@@ -228,18 +232,29 @@
 
     /* ---------- Projects: list view ---------- */
     html[data-view="list"] .project-grid { display:block; }
-    html[data-view="list"] .project::after { content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--ink); transform-origin:left; }
-    html.js[data-view="list"] .project::after { transform:scaleX(0); transition:transform 1.25s var(--ease-io); }
-    html.js[data-view="list"] .project.in::after { transform:none; }
-    html[data-view="list"] .project-link { display:grid; grid-template-columns:52px minmax(0,1fr) minmax(0,300px) 120px 38px; grid-template-areas:"num title type year arrow"; align-items:center; column-gap:24px; padding:26px 0 25px; }
+    html[data-view="list"] .project-link { display:grid; grid-template-columns:52px minmax(0,1fr) minmax(0,300px) 120px 38px; grid-template-areas:"num title type year arrow" ". detail . . ."; align-items:center; column-gap:24px; padding:22px 0; }
     html[data-view="list"] .project-meta, html[data-view="list"] .project-heading { display:contents; }
     html[data-view="list"] .project .project-number { grid-area:num; }
     html[data-view="list"] .project-type { grid-area:type; }
     html[data-view="list"] .project-year { grid-area:year; justify-self:end; margin:0; padding:0; }
     html[data-view="list"] .project h3 { grid-area:title; font-size:clamp(30px,4.2vw,62px); line-height:1; letter-spacing:-.05em; }
     html[data-view="list"] .project .arrow { grid-area:arrow; }
-    html[data-view="list"] .cover, html[data-view="list"] .description, html[data-view="list"] .project-tools,
-    html[data-view="list"] .cover-label, html[data-view="list"] .cover-caption { display:none; }
+    html[data-view="list"] .cover, html[data-view="list"] .cover-label, html[data-view="list"] .cover-caption { display:none; }
+    .list-meta { display:none; }
+    /* List view: the hovered project unfolds under its title; the rest dim */
+    html[data-view="list"] .detail { grid-area:detail; display:grid; grid-template-rows:0fr; transition:grid-template-rows .52s cubic-bezier(.65,0,.35,1); }
+    html[data-view="list"] .detail-in { min-height:0; overflow:hidden; opacity:0; transition:opacity .2s linear; }
+    html[data-view="list"] .project.is-open .detail { grid-template-rows:1fr; }
+    html[data-view="list"] .project.is-open .detail-in { opacity:1; transition:opacity .4s var(--ease) .2s; }
+    html[data-view="list"] .list-meta { display:flex; align-items:baseline; gap:26px; margin:18px 0 0; font:700 10px/1.5 var(--mono); letter-spacing:.5px; text-transform:uppercase; color:var(--muted); }
+    html[data-view="list"] .lm-year { color:var(--ink); font-variant-numeric:tabular-nums; }
+    html[data-view="list"] .description { margin-top:16px; max-width:62ch; }
+    html[data-view="list"] .project-tools { margin:14px 0 6px; }
+    html[data-view="list"] .project-grid.has-open .project:not(.is-open) { opacity:.3; }
+    html[data-view="list"] .project.is-open .project-number { background:var(--ink); color:var(--paper); }
+    html[data-view="list"] .project.is-open h3 .ul { background-size:100% .55em; }
+    html.js[data-view="list"] .project-grid.has-open .project.in .project-type, html.js[data-view="list"] .project-grid.has-open .project.in .project-year,
+    html.js[data-view="list"] .project-grid.has-open .project.in .arrow { opacity:0; transform:none; transition:opacity .25s var(--ease), background .3s, color .3s, border-color .3s; }
     html.js[data-view="list"] .project .project-number, html.js[data-view="list"] .project .project-type, html.js[data-view="list"] .project .project-year,
     html.js[data-view="list"] .project h3, html.js[data-view="list"] .project .arrow {
       opacity:0; transform:translateY(16px);
@@ -253,13 +268,17 @@
     html.js[data-view="list"] .project.in h3, html.js[data-view="list"] .project.in .arrow { opacity:1; transform:none; }
     html[data-view="list"] .project-link:focus-visible { outline-offset:2px; }
 
-    .preview { position:fixed; top:0; left:0; z-index:44; width:clamp(240px,23vw,360px); aspect-ratio:1625 / 968; pointer-events:none; opacity:0; will-change:transform, opacity; }
+    .preview { position:fixed; top:0; left:0; z-index:44; width:clamp(260px,24vw,440px); aspect-ratio:1625 / 968; pointer-events:none; opacity:0; will-change:transform, opacity; }
     .preview-in { position:relative; width:100%; height:100%; }
     .pv-slide { position:absolute; inset:0; overflow:hidden; border:1px solid var(--ink); background:var(--rim); --tdur:.72s; }
     .pv-slide .tear-in { position:absolute; inset:0; background:#0d0d0c; }
     .pv-slide picture, .pv-slide img { display:block; width:100%; height:100%; object-fit:cover; }
 
-    .cursor { position:fixed; top:0; left:0; z-index:60; display:grid; place-items:center; width:98px; height:98px; margin:-49px 0 0 -49px; border:1px solid var(--ink); border-radius:50%; background:var(--pop); color:#181818; font:700 11px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; pointer-events:none; transform:scale(0); will-change:transform; }
+    .pointer { position:fixed; top:0; left:0; z-index:200; width:36px; height:40px; margin:-3px 0 0 -4px; pointer-events:none; visibility:hidden; will-change:transform; }
+    html.pointer-live .pointer { visibility:visible; }
+    .pointer svg { display:block; width:36px; height:40px; transform-origin:4px 3px; transform:scale(var(--ps,1)); transition:transform .28s var(--ease); }
+    .pointer.down { --ps:.88; }
+    @media (forced-colors:active) { .pointer { display:none !important; } }
 
     /* ---------- Marquee ---------- */
     .marquee { margin-top:110px; overflow:hidden; border-block:1px solid var(--ink); padding:20px 0 22px; }
@@ -272,7 +291,8 @@
     /* ---------- About ---------- */
     .about { padding-top:150px; }
     .about-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:36px; margin-top:64px; }
-    .about-lead { grid-column:2; margin:0; max-width:17em; font-size:clamp(28px,3.4vw,50px); font-weight:700; line-height:1.06; letter-spacing:-.045em; text-wrap:balance; }
+    .about-lead { grid-column:2; margin:0; max-width:17em; font-size:clamp(30px,3.8vw,54px); font-weight:700; line-height:1.04; letter-spacing:-.045em; text-wrap:balance; }
+    .about-lead .sq { color:var(--olive); }
     .steps { list-style:none; display:grid; grid-template-columns:repeat(3,1fr); column-gap:36px; margin:110px 0 0; padding:0; }
     .step { position:relative; padding-top:20px; }
     .step::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:var(--ink); transform-origin:left; }
@@ -307,16 +327,17 @@
     .minibar { position:fixed; top:0; left:0; right:0; z-index:50; background:var(--bar); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:1px solid var(--ink); transform:translateY(-102%); visibility:hidden; transition:transform .7s var(--ease), visibility 0s linear .7s; }
     .minibar.show { transform:none; visibility:visible; transition:transform .7s var(--ease); }
     .minibar-in { display:flex; align-items:center; justify-content:space-between; gap:20px; height:54px; }
-    .mb-links { display:flex; align-items:center; gap:2px; margin-right:-9px; }
+    .mb-links { display:flex; align-items:center; gap:2px; margin-right:-10px; }
     .mb-link { position:relative; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; color:var(--ink); text-decoration:none; }
     .mb-link::before { content:""; position:absolute; inset:0; border-radius:50%; background:var(--paper); border:1px solid var(--ink); transform:scale(0); transition:transform .5s var(--ease); }
     .mb-link .mb-ico { position:relative; display:block; width:18px; height:18px; transition:transform .5s var(--ease), opacity .3s; }
-    .mb-link.is-off .mb-ico { opacity:.4; }
+    .mb-link .ico { position:relative; display:block; width:20px; height:20px; transition:transform .5s var(--ease), opacity .3s; }
+    .mb-link.is-off .mb-ico, .mb-link.is-off .ico { opacity:.4; }
     .mb-link::after { content:attr(data-label); position:absolute; top:calc(100% + 12px); left:50%; padding:4px 6px 3px; background:var(--ink); color:var(--paper); font:700 9px/1 var(--mono); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; opacity:0; transform:translate(-50%,-4px); pointer-events:none; transition:opacity .3s var(--ease), transform .4s var(--ease); }
     .mb-link:focus-visible::before { transform:scale(1); }
     .mb-link:focus-visible::after { opacity:1; transform:translate(-50%,0); }
     .mb-link:focus-visible { outline-offset:2px; }
-    .mb-sep { width:1px; height:18px; margin:0 8px; background:var(--line); }
+    .mb-sep { width:1px; height:16px; margin:0 8px; background:var(--line); }
     .mb-left { display:flex; align-items:center; margin-left:-9px; }
     .mb-left .mb-sep { margin:0 14px 0 8px; }
     .mb-index { display:flex; align-items:center; gap:10px; font-size:10px; }
@@ -335,7 +356,7 @@
     @media (hover:hover) {
       .theme-btn:hover::before, .mb-link:not(.is-off):hover::before { transform:scale(1); }
       .theme-btn:hover svg { transform:rotate(-25deg); }
-      .mb-link:not(.is-off):hover .mb-ico { transform:translateY(-1px) scale(1.08); }
+      .mb-link:not(.is-off):hover .mb-ico, .mb-link:not(.is-off):hover .ico { transform:translateY(-1px) scale(1.08); }
       .mb-link:hover::after { opacity:1; transform:translate(-50%,0); }
       .lang button:hover, .cue:hover, .mq-item.outline:hover, .clink:hover, .view-btn:hover { color:var(--ink); }
       .view-btn[aria-pressed="true"]:hover { color:var(--paper); }
@@ -343,7 +364,6 @@
       .mq-item:hover { color:var(--olive); }
       .footer a:hover { text-decoration:underline; text-underline-offset:4px; }
       .project-grid:has(.project-link:hover) .project:not(:hover) { opacity:.42; filter:grayscale(.85); }
-      html[data-view="list"] .project-grid:has(.project-link:hover) .project:not(:hover) { opacity:.28; filter:none; }
       .project-link:hover .art { --sc:1.05; }
       .project-link:hover h3 .ul, .cta:hover .ul { background-size:100% .55em; }
       .project-link:hover .arrow, .cta:hover .arrow { background:var(--pop); color:#181818; border-color:#181818; }
@@ -351,8 +371,8 @@
       .project-link:hover .arrow .a2, .cta:hover .arrow .a2 { transform:none; }
       .project-link:hover .project-number { background:var(--ink); color:var(--paper); }
     }
-    @media (hover:hover) and (pointer:fine) { .cover { cursor:none; } }
-    @media not all and (hover:hover) { .preview { display:none; } }
+    @media (hover:hover) and (pointer:fine) { html.pointer-live, html.pointer-live * { cursor:none !important; } }
+    @media not all and (hover:hover) { .preview { display:none; } html[data-view="list"] .detail { display:none; } }
     @media (hover:none) and (min-width:681px) {
       html[data-view="list"] .project-link { grid-template-columns:52px minmax(0,1fr) minmax(0,240px) 96px 168px; grid-template-areas:"num title type year thumb"; }
       html[data-view="list"] .cover { display:block; grid-area:thumb; }
@@ -371,7 +391,7 @@
       h3 { font-size:29px; }
       .cover-label { top:14px; left:16px; right:16px; font-size:8px; }
       .cover-caption { left:16px; bottom:13px; font-size:8px; }
-      html[data-view="list"] .project-link { grid-template-columns:44px minmax(0,1fr) 110px 38px; grid-template-areas:"num title year arrow"; column-gap:18px; }
+      html[data-view="list"] .project-link { grid-template-columns:44px minmax(0,1fr) 110px 38px; grid-template-areas:"num title year arrow" ". detail . ."; column-gap:18px; }
       html[data-view="list"] .project-type { display:none; }
       .about-lead { grid-column:1 / -1; max-width:20em; }
     }
@@ -386,8 +406,8 @@
       .loader-note { font-size:8px; }
       .topbar { min-height:65px; gap:14px; }
       .topbar > .name { display:none; }
-      .topbar-right { flex:1; gap:8px; }
-      .top-links { margin-left:-9px; margin-right:auto; }
+      .topbar-right { flex:1; }
+      .top-links { margin-left:-10px; margin-right:auto; }
       .top-sep { display:none; }
       .lang { font-size:10px; }
       .intro { grid-template-columns:1fr; gap:25px; padding:34px 0 30px; }
@@ -407,13 +427,14 @@
       .description { font-size:14px; line-height:1.65; margin-top:13px; }
       html[data-view="list"] .project-link { grid-template-columns:30px minmax(0,1fr) 38%; grid-template-areas:"num title thumb" "num year thumb"; column-gap:14px; row-gap:10px; align-items:start; padding:16px 0 17px; }
       html[data-view="list"] .cover { display:block; grid-area:thumb; }
+      html[data-view="list"] .detail { display:none; }
       html[data-view="list"] .project .arrow, html[data-view="list"] .project-type { display:none; }
       html[data-view="list"] .project-year { justify-self:start; align-self:end; }
       html[data-view="list"] .project h3 { font-size:clamp(22px,6.6vw,30px); letter-spacing:-.04em; line-height:1.02; }
       .marquee { margin-top:72px; padding:14px 0 16px; }
       .about, .contact { padding-top:96px; }
       .about-grid { margin-top:40px; }
-      .about-lead { font-size:clamp(26px,7.4vw,34px); }
+      .about-lead { font-size:clamp(28px,8.6vw,40px); }
       .steps { grid-template-columns:1fr; row-gap:40px; margin-top:64px; }
       .step h3 { margin-top:18px; }
       .contact-title { margin-top:40px; font-size:clamp(40px,12.4vw,64px); }
@@ -434,13 +455,20 @@
       html.js .cover-label, html.js .cover-caption, html.js .hero-foot-in, html.js[data-view="list"] .project-link > *,
       html.js[data-view="list"] .project-meta > *, html.js[data-view="list"] .project-heading > *, html.js .section-label[data-draw] > * { opacity:1 !important; transform:none !important; }
       html.js .tear, html.js .tear > .tear-in { clip-path:none !important; }
-      html.js .section-label[data-draw]::before, html.js .section-label[data-draw]::after, html.js .step::before, html.js[data-view="list"] .project::after { transform:none !important; }
+      html.js .section-label[data-draw]::before, html.js .section-label[data-draw]::after, html.js .step::before { transform:none !important; }
       html.js .cover .art { --sc:1 !important; }
-      .preview, .cursor { display:none !important; }
+      .preview { display:none !important; }
     }
   </style>
 </head>
 <body>
+  <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="i-github" viewBox="-0.995 -1.260 25.491 25.491"><g fill="none" stroke="currentColor" stroke-width="1.657" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3"/><path d="M16 22v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></g></symbol>
+    <symbol id="i-linkedin" viewBox="0.466 0.966 22.069 22.069"><g fill="none" stroke="currentColor" stroke-width="1.434" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="1"/><path d="M5 10v10M10 20V10m0 4.5a4.5 4.5 0 0 1 9 0V20"/></g></symbol>
+    <symbol id="i-mail" viewBox="0.125 0.125 23.750 23.750"><g fill="none" stroke="currentColor" stroke-width="1.544" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx=".5"/><path d="m3 5.5 9 7 9-7"/></g></symbol>
+    <symbol id="i-moon" viewBox="1.145 0.735 22.120 22.120"><g fill="none" stroke="currentColor" stroke-width="1.438" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></g></symbol>
+    <symbol id="i-sun" viewBox="0.889 0.889 22.222 22.222"><g fill="none" stroke="currentColor" stroke-width="1.444" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></g></symbol>
+  </svg>
   <a class="skip" href="#projects" data-i18n="skip">Skip to projects</a>
 
   <div class="loader" aria-hidden="true">
@@ -461,17 +489,24 @@
         <div class="mb-index"><span class="mb-k">Index</span><span class="mb-num" id="mb-num">01</span><span class="mb-of">/ 04</span><span class="mb-title" id="mb-title" data-i18n="p1.title">Overdue Sessions</span></div>
       </div>
       <div class="mb-links">
-        <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
+        <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="ico i-moon" aria-hidden="true" focusable="false"><use href="#i-moon"/></svg><svg class="ico i-sun" aria-hidden="true" focusable="false"><use href="#i-sun"/></svg></button>
         <span class="mb-sep" aria-hidden="true"></span>
-        <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
-        <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
-        <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
+        <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></a>
+        <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></a>
+        <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></a>
       </div>
     </div>
     <i class="mb-progress" aria-hidden="true"></i>
   </nav>
 
-  <div class="cursor" aria-hidden="true">View ↗</div>
+  <div class="pointer" aria-hidden="true">
+    <svg viewBox="0 0 36 40" width="36" height="40" fill="none" focusable="false">
+      <path d="M4 3V29L10.5 22.5L16.5 35L22 32.25L16 20.5H30L4 3Z" fill="#181818" stroke="#f6f4ee" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M7.5 10V21L12 16.5H17L7.5 10Z" fill="#6b7060"/>
+      <path d="M28 29H33V34H28V29Z" fill="#dfff6c" stroke="#f6f4ee" stroke-width="3" paint-order="stroke"/>
+      <path d="M28 29H33V34H28V29Z" stroke="#181818" stroke-width="1"/>
+    </svg>
+  </div>
   <div class="preview" aria-hidden="true"><div class="preview-in"></div></div>
   <div class="toast" role="status" aria-live="polite"></div>
 
@@ -482,13 +517,13 @@
           <a class="name" href="#top">J. BARRERA.</a>
           <div class="topbar-right">
             <div class="top-links">
-              <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><img class="mb-ico" src="./img/github.svg" alt="" width="18" height="18"></a>
-              <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><img class="mb-ico" src="./img/linkedin.svg" alt="" width="18" height="18"></a>
-              <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><img class="mb-ico" src="./img/gmail.svg" alt="" width="18" height="18"></a>
+              <a class="mb-link" data-link="github" href="#" target="_blank" rel="noopener noreferrer" data-label="GitHub" aria-label="GitHub — opens in a new tab" data-i18n-attr="aria-label:ghAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-github"/></svg></a>
+              <a class="mb-link" data-link="linkedin" href="#" target="_blank" rel="noopener noreferrer" data-label="LinkedIn" aria-label="LinkedIn — opens in a new tab" data-i18n-attr="aria-label:liAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-linkedin"/></svg></a>
+              <a class="mb-link" data-link="email" href="#" data-label="Email" aria-label="Send an email" data-i18n-attr="data-label:email;aria-label:emailAria"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></a>
             </div>
             <span class="top-sep" aria-hidden="true"></span>
-            <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:langAria"><button type="button" data-lang="es" aria-pressed="false">ES</button><span aria-hidden="true">/</span><button type="button" data-lang="en" aria-pressed="true">EN</button></div>
-            <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
+            <div class="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:langAria"><button type="button" data-lang="es" aria-pressed="false"><span>ES</span></button><span class="lang-sep" aria-hidden="true">/</span><button type="button" data-lang="en" aria-pressed="true"><span>EN</span></button></div>
+            <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to dark theme"><svg class="ico i-moon" aria-hidden="true" focusable="false"><use href="#i-moon"/></svg><svg class="ico i-sun" aria-hidden="true" focusable="false"><use href="#i-sun"/></svg></button>
           </div>
         </header>
         <div class="hero-block">
@@ -543,8 +578,11 @@
               <h3><span class="ul" data-i18n="p1.title">Overdue Sessions</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p1.desc">An exploratory data analysis of the state of mental health care access in Spain. The project examines waiting times, coverage gaps and regional disparities in public psychological services — combining open government data with web-scraped sources to surface a largely invisible public health issue.</p>
-            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p1.tools">Built with D3.js and Three.js</p>
+            <div class="detail"><div class="detail-in">
+              <p class="list-meta" aria-hidden="true"><span class="lm-year">2026</span><span data-i18n="p1.type">Exploratory Data Analysis | Data Visualization</span></p>
+              <p class="description" data-reveal style="--d:.35s" data-i18n="p1.desc">An exploratory data analysis of the state of mental health care access in Spain. The project examines waiting times, coverage gaps and regional disparities in public psychological services — combining open government data with web-scraped sources to surface a largely invisible public health issue.</p>
+              <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p1.tools">Built with D3.js and Three.js</p>
+            </div></div>
           </a>
         </article>
 
@@ -565,8 +603,11 @@
               <h3><span class="ul" data-i18n="p2.title">CTI Report</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p2.desc">A threat intelligence analysis tracking cyberattack campaigns. The project maps attack vectors, targeted sectors and geographic patterns across a multi-year dataset, producing an interactive dashboard.</p>
-            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p2.tools">Built with D3.js</p>
+            <div class="detail"><div class="detail-in">
+              <p class="list-meta" aria-hidden="true"><span class="lm-year">2026</span><span data-i18n="type">Data Analysis &amp; Visualization</span></p>
+              <p class="description" data-reveal style="--d:.35s" data-i18n="p2.desc">A threat intelligence analysis tracking cyberattack campaigns. The project maps attack vectors, targeted sectors and geographic patterns across a multi-year dataset, producing an interactive dashboard.</p>
+              <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p2.tools">Built with D3.js</p>
+            </div></div>
           </a>
         </article>
 
@@ -585,8 +626,11 @@
               <h3><span class="ul" data-i18n="p3.title">Bosman Ruling</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p3.desc">An analytical deep-dive into the long-term impact of the 1995 Bosman ruling on professional football. The project tracks how freedom of movement transformed player transfer markets, squad nationality composition, and wage structures across Europe’s top leagues — using historical data spanning three decades.</p>
-            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p3.tools">Built with JavaScript and Canvas</p>
+            <div class="detail"><div class="detail-in">
+              <p class="list-meta" aria-hidden="true"><span class="lm-year">2026</span><span data-i18n="type">Data Analysis &amp; Visualization</span></p>
+              <p class="description" data-reveal style="--d:.35s" data-i18n="p3.desc">An analytical deep-dive into the long-term impact of the 1995 Bosman ruling on professional football. The project tracks how freedom of movement transformed player transfer markets, squad nationality composition, and wage structures across Europe’s top leagues — using historical data spanning three decades.</p>
+              <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p3.tools">Built with JavaScript and Canvas</p>
+            </div></div>
           </a>
         </article>
 
@@ -605,8 +649,11 @@
               <h3><span class="ul" data-i18n="p4.title">Global CO₂ Emissions</span></h3>
               <span class="arrow" aria-hidden="true"><svg class="a1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg><svg class="a2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19 19 5M5 5h14v14"/></svg></span>
             </div>
-            <p class="description" data-reveal style="--d:.35s" data-i18n="p4.desc">An interactive Tableau dashboard tracking global CO₂ emissions across countries, sectors and time. Built on publicly available climate datasets processed with Python, it allows users to explore emission trends, per-capita comparisons and sectoral breakdowns — making complex climate data accessible and actionable.</p>
-            <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p4.tools">Built with Tableau and Python</p>
+            <div class="detail"><div class="detail-in">
+              <p class="list-meta" aria-hidden="true"><span class="lm-year">2024</span><span data-i18n="p4.type">Tableau | Data Analysis &amp; Visualization</span></p>
+              <p class="description" data-reveal style="--d:.35s" data-i18n="p4.desc">An interactive Tableau dashboard tracking global CO₂ emissions across countries, sectors and time. Built on publicly available climate datasets processed with Python, it allows users to explore emission trends, per-capita comparisons and sectoral breakdowns — making complex climate data accessible and actionable.</p>
+              <p class="project-tools" data-reveal style="--d:.42s" data-i18n="p4.tools">Built with Tableau and Python</p>
+            </div></div>
           </a>
         </article>
 
@@ -630,7 +677,7 @@
         <span data-i18n="aboutNote">How I work</span>
       </div>
       <div class="about-grid">
-        <p class="about-lead" data-i18n="aboutLead">I look for the stories hidden in public data, and design them so anyone can read them.</p>
+        <p class="about-lead" data-i18n="aboutLead">Stories hidden in data:<br>questions &amp; answers<br>that shape them.</p>
       </div>
       <ol class="steps">
         <li class="step"><span class="project-number">01</span><h3 data-i18n="s1t">Research</h3><p data-i18n="s1d">Questions first, then the data to answer them: open government datasets, public sources and web scraping.</p></li>
@@ -749,7 +796,7 @@
         navAria: 'Quick navigation', navIndex: 'Index', navAbout: 'About', navContact: 'Contact',
         home: 'Home', homeAria: 'Back to the cover', ghAria: 'GitHub — opens in a new tab',
         liAria: 'LinkedIn — opens in a new tab', email: 'Email', emailAria: 'Send an email', index: 'Index',
-        view: 'View ↗', soon: 'Soon', toDark: 'Switch to dark theme', toLight: 'Switch to light theme', langAria: 'Language',
+        toDark: 'Switch to dark theme', toLight: 'Switch to light theme', langAria: 'Language',
         eyebrow: 'Research. Analysis. Visual stories.', h1a: 'EXPLORING', h1b: 'DATA', h1aria: 'Exploring data.',
         byline: 'A collection of <br>independent projects.', label: 'Index',
         layoutAria: 'Layout', gridView: 'Grid view', listView: 'List view',
@@ -770,7 +817,7 @@
         'p4.tools': 'Built with Tableau and Python',
         mqAria: 'Skills', mq1: 'Data Science', mq2: 'UX/UI', mq3: 'Web Design', mq4: 'Development',
         aboutLabel: 'About', aboutNote: 'How I work',
-        aboutLead: 'I look for the stories hidden in public data, and design them so anyone can read them.',
+        aboutLead: 'Stories hidden in data:<br>questions &amp; answers<br>that shape them.',
         s1t: 'Research', s1d: 'Questions first, then the data to answer them: open government datasets, public sources and web scraping.',
         s2t: 'Analysis', s2d: 'Cleaning, exploring and testing the data in Python until the pattern holds up.',
         s3t: 'Visual stories', s3d: 'Interactive pieces built with D3.js, Three.js and Tableau, designed to be explored, not just looked at.',
@@ -786,7 +833,7 @@
         navAria: 'Navegación rápida', navIndex: 'Índice', navAbout: 'Sobre mí', navContact: 'Contacto',
         home: 'Inicio', homeAria: 'Volver a la portada', ghAria: 'GitHub — se abre en una pestaña nueva',
         liAria: 'LinkedIn — se abre en una pestaña nueva', email: 'Correo', emailAria: 'Enviar un correo', index: 'Índice',
-        view: 'Ver ↗', soon: 'Pronto', toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', langAria: 'Idioma',
+        toDark: 'Cambiar a tema oscuro', toLight: 'Cambiar a tema claro', langAria: 'Idioma',
         eyebrow: 'Investigación. Análisis. Historias visuales.', h1a: 'EXPLORANDO', h1b: 'DATOS', h1aria: 'Explorando datos.',
         byline: 'Una colección de <br>proyectos independientes.', label: 'Índice',
         layoutAria: 'Vista', gridView: 'Vista en cuadrícula', listView: 'Vista en lista',
@@ -807,7 +854,7 @@
         'p4.tools': 'Hecho con Tableau y Python',
         mqAria: 'Habilidades', mq1: 'Ciencia de datos', mq2: 'UX/UI', mq3: 'Diseño web', mq4: 'Desarrollo',
         aboutLabel: 'Sobre mí', aboutNote: 'Cómo trabajo',
-        aboutLead: 'Busco las historias que esconden los datos públicos y las diseño para que cualquiera pueda leerlas.',
+        aboutLead: 'Historias ocultas en los datos:<br>preguntas y respuestas<br>que les dan forma.',
         s1t: 'Investigación', s1d: 'Primero las preguntas; después, los datos para responderlas: datos abiertos oficiales, fuentes públicas y web scraping.',
         s2t: 'Análisis', s2d: 'Limpiar, explorar y contrastar los datos con Python hasta que el patrón se sostiene.',
         s3t: 'Historias visuales', s3d: 'Piezas interactivas hechas con D3.js, Three.js y Tableau, pensadas para explorarse, no solo para mirarse.',
@@ -944,7 +991,7 @@
     const track = $('.hero-track'), sticky = $('.hero-sticky'), topbar = $('.topbar');
     const intro = $('.intro'), label = $('.section-label'), heroFoot = $('.hero-foot');
     const projects = $('#projects'), grid = $('.project-grid'), minibar = $('.minibar'), mbProgress = $('.mb-progress');
-    const mqTrack = $('.marquee-track'), cursorEl = $('.cursor'), toastEl = $('.toast');
+    const mqTrack = $('.marquee-track'), toastEl = $('.toast');
     const items = $$('.project');
     let VIEW = root.getAttribute('data-view') === 'list' ? 'list' : 'grid';
     let curSec = '';
@@ -959,9 +1006,9 @@
       }
     }
 
-    const st = { pin: false, D: 0, offset: 0, threshold: 0, lastS: -1, cHidden: false, hs: 0, s: scrollY, sS: scrollY, prevS: scrollY, last: -1,
+    const st = { pin: false, D: 0, offset: 0, threshold: 0, lastS: -1, hs: 0, s: scrollY, sS: scrollY, prevS: scrollY, last: -1,
                  mqX: 0, mqW: 1, mqSpeed: 1, mqDir: 1, mqSkew: 0, mqOn: false, eyebrowDone: false, labelDone: false,
-                 cx: innerWidth / 2, cy: innerHeight / 2, px: innerWidth / 2, py: innerHeight / 2, csc: 0, con: false,
+                 cx: innerWidth / 2, cy: innerHeight / 2,
                  lw: innerWidth, lh: innerHeight };
     const LERP = fine ? 0.11 : 0.24;
 
@@ -1097,24 +1144,9 @@
       mqTrack.style.transform = `translate3d(${st.mqX.toFixed(2)}px,0,0) skewX(${st.mqSkew.toFixed(2)}deg)`;
     }
 
-    /* ---------- Cursor ---------- */
-    function cursorOn(link, e) {
-      cursorEl.textContent = link.getAttribute('href') === '#' ? T('soon') : T('view');
-      if (st.csc < 0.01 && e) { st.px = e.clientX; st.py = e.clientY; }
-      st.con = true;
-    }
-    function cursor() {
-      if (!fine) return;
-      st.px += (st.cx - st.px) * 0.2; st.py += (st.cy - st.py) * 0.2;
-      st.csc += ((st.con ? 1 : 0) - st.csc) * 0.16;
-      if (st.csc < 0.001 && !st.con) { if (!st.cHidden) { cursorEl.style.transform = 'scale(0)'; st.cHidden = true; } return; }
-      st.cHidden = false;
-      cursorEl.style.transform = `translate3d(${st.px.toFixed(1)}px,${st.py.toFixed(1)}px,0) scale(${st.csc.toFixed(3)})`;
-    }
-
     /* ---------- List view: floating preview ---------- */
     const pvEl = $('.preview'), pvIn = $('.preview-in');
-    const pv = { built: false, slides: [], active: -1, z: 1, on: false, s: 0, x: 0, y: 0, r: 0, lcx: 0, w: 0, h: 0, hideT: 0, hidden: true };
+    const pv = { built: false, slides: [], active: -1, z: 1, on: false, s: 0, x: 0, y: 0, r: 0, lcx: 0, w: 0, h: 0, hideT: 0, hidden: true, minX: 0 };
     const previewOK = () => fine && !reduce && VIEW === 'list' && innerWidth > 680;
     function buildPreview() {
       if (pv.built) return;
@@ -1131,9 +1163,10 @@
       pv.built = true;
     }
     function pvTarget() {
-      let tx = st.cx + 40;
-      if (tx + pv.w > innerWidth - 20) tx = st.cx - 40 - pv.w;
-      return [tx, clamp(st.cy - pv.h / 2, 14, innerHeight - pv.h - 14)];
+      /* Follow the pointer, but never cover the unfolded text */
+      let tx = Math.max(st.cx + 56, pv.minX);
+      tx = Math.min(tx, innerWidth - 20 - pv.w);
+      return [tx, clamp(st.cy - 44, 14, innerHeight - pv.h - 14)];
     }
     function pvShow(i) {
       if (i === pv.active) return;
@@ -1165,7 +1198,7 @@
       const d = st.s - st.sS;
       st.sS += d * LERP;
       if (Math.abs(d) < 0.08) st.sS = st.s;
-      render(); marquee(); cursor(); preview();
+      render(); marquee(); preview();
       st.prevS = st.s;
       raf(loop);
     }
@@ -1183,6 +1216,38 @@
       items.forEach(p => { io.unobserve(p); io.observe(p); });
     }
 
+    /* ---------- List view: unfold one project at a time ---------- */
+    const unfoldOK = () => VIEW === 'list' && matchMedia('(hover:hover) and (min-width:681px)').matches;
+    const FOLD_MS = 520;
+    let openP = null, lockUntil = 0, intentT = 0, intentP = null;
+    function setOpen(p) {
+      if (p === openP) return;
+      if (openP && p) lockUntil = performance.now() + FOLD_MS;
+      if (openP) openP.classList.remove('is-open');
+      openP = p;
+      if (p) { p.classList.add('is-open'); pv.minX = $('.description', p).getBoundingClientRect().right + 48; }
+      grid.classList.toggle('has-open', !!p);
+    }
+    /* Hover intent: open only after the pointer rests briefly on a row, and never while rows are still moving */
+    function intend(p, i) {
+      if (p === openP) { clearTimeout(intentT); intentP = null; return; }
+      if (p === intentP) return;
+      clearTimeout(intentT); intentP = p;
+      const wait = Math.max(openP ? 120 : 40, lockUntil - performance.now());
+      intentT = setTimeout(() => {
+        intentP = null;
+        if (!unfoldOK()) return;
+        setOpen(p);
+        if (!previewOK()) return;
+        buildPreview();
+        if (pv.s < 0.05) { const [tx, ty] = pvTarget(); pv.x = tx; pv.y = ty; pv.lcx = st.cx; }
+        pv.on = true;
+        pvShow(i);
+      }, wait);
+    }
+    grid.addEventListener('focusin', e => { const p = e.target.closest('.project'); if (p && unfoldOK()) setOpen(p); });
+    grid.addEventListener('focusout', e => { if (!grid.contains(e.relatedTarget)) setOpen(null); });
+
     /* ---------- Grid / list switch ---------- */
     let switching = false;
     function syncViewBtns() { $$('.view-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === VIEW))); }
@@ -1195,7 +1260,7 @@
         root.setAttribute('data-view', v);
         syncViewBtns();
         pv.on = false;
-        st.con = false;
+        setOpen(null);
         $$('.cover').forEach(tearReset);
         st.lastS = -1;
         observeProjects();
@@ -1264,7 +1329,7 @@
       e.preventDefault();
     });
 
-    /* ---------- Hover: scramble, cursor, parallax, preview ---------- */
+    /* ---------- Hover: scramble, parallax, preview ---------- */
     $$('[data-scramble]').forEach(el => el.addEventListener('mouseenter', () => scramble($('.sc', el))));
     $$('.project-link').forEach(link => link.addEventListener('mouseenter', () => {
       $$('.cover-label span, .project-type', link).forEach((el, i) => scramble(el, null, 520 + i * 120));
@@ -1273,8 +1338,7 @@
     if (fine) {
       window.addEventListener('pointermove', e => { st.cx = e.clientX; st.cy = e.clientY; }, { passive: true });
       $$('.cover').forEach(c => {
-        const art = $('.art', c), link = c.closest('.project-link');
-        c.addEventListener('pointerenter', e => { if (VIEW === 'grid') cursorOn(link, e); });
+        const art = $('.art', c);
         c.addEventListener('pointermove', e => {
           if (VIEW !== 'grid') return;
           const r = c.getBoundingClientRect();
@@ -1283,27 +1347,39 @@
           art.style.setProperty('--ty', (-ny * 13).toFixed(1) + 'px');
         });
         c.addEventListener('pointerleave', () => {
-          if (VIEW === 'grid') st.con = false;
           art.style.removeProperty('--tx'); art.style.removeProperty('--ty');
         });
       });
-      items.forEach((p, i) => {
-        const link = $('.project-link', p);
-        link.addEventListener('pointerenter', e => {
-          if (!previewOK()) return;
-          clearTimeout(pv.hideT);
-          buildPreview();
-          if (pv.s < 0.05) { st.cx = e.clientX; st.cy = e.clientY; const [tx, ty] = pvTarget(); pv.x = tx; pv.y = ty; pv.lcx = e.clientX; }
-          pv.on = true;
-          pvShow(i);
-        });
-        link.addEventListener('pointerleave', () => {
-          if (VIEW !== 'list') return;
-          pv.hideT = setTimeout(() => { pv.on = false; }, 90);
-        });
+      grid.addEventListener('pointermove', e => {
+        if (e.pointerType !== 'mouse' || !unfoldOK()) return;
+        clearTimeout(pv.hideT);
+        const p = e.target.closest('.project');
+        if (p) intend(p, items.indexOf(p));
+      }, { passive: true });
+      grid.addEventListener('pointerleave', () => {
+        if (VIEW !== 'list') return;
+        clearTimeout(intentT); intentP = null;
+        pv.hideT = setTimeout(() => { pv.on = false; setOpen(null); }, 160);
       });
-    } else {
-      cursorEl.remove();
+    }
+
+    /* ---------- Pointer: Index arrow (hotspot at the tip) ---------- */
+    const pointer = $('.pointer');
+    if (fine && pointer && !matchMedia('(forced-colors:active)').matches) {
+      let live = false;
+      const hide = () => { live = false; root.classList.remove('pointer-live'); pointer.classList.remove('down'); };
+      function move(e) {
+        if (e.pointerType !== 'mouse') { if (live) hide(); return; }
+        pointer.style.transform = `translate3d(${e.clientX}px,${e.clientY}px,0)`;
+        if (!live) { live = true; root.classList.add('pointer-live'); }
+      }
+      window.addEventListener('pointermove', move, { passive: true });
+      window.addEventListener('pointerdown', e => { move(e); if (e.pointerType === 'mouse') pointer.classList.add('down'); }, { passive: true });
+      window.addEventListener('pointerup', () => pointer.classList.remove('down'), { passive: true });
+      window.addEventListener('pointerout', e => { if (!e.relatedTarget) hide(); });
+      window.addEventListener('blur', hide);
+      window.addEventListener('dragstart', hide);
+      document.addEventListener('visibilitychange', () => { if (document.hidden) hide(); });
     }
 
     /* ---------- Observers ---------- */
