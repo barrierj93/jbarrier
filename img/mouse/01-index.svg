@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="40" viewBox="0 0 36 40" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Index — editorial mouse pointer</title>
+  <desc id="desc">An angular ink arrow, olive inset and acid punctuation. Transparent. CSS hotspot: 4 3.</desc>
+  <path d="M4 3V29L10.5 22.5L16.5 35L22 32.25L16 20.5H30L4 3Z" fill="#181818" stroke="#f6f4ee" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M7.5 10V21L12 16.5H17L7.5 10Z" fill="#6b7060"/>
+  <path d="M28 29H33V34H28V29Z" fill="#dfff6c" stroke="#f6f4ee" stroke-width="3" paint-order="stroke"/>
+  <path d="M28 29H33V34H28V29Z" stroke="#181818" stroke-width="1"/>
+</svg>
+
